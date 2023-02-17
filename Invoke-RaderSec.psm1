@@ -1,4 +1,10 @@
 ﻿# RaderSec Client Onboarding Script
+ 
+Function Update-RaderSec {
+    cd $env:USERPROFILE
+    Invoke-WebRequest -Uri https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/Invoke-RaderSec.psm1 -OutFile 'OneDrive - RaderSolutions/Documents/WindowsPowerShell/Modules/RaderSecOps/Invoke-RaderSec.psm1'
+    Write-Host "The RaderSecOps module has been updated"
+}
 Function Invoke-RaderSec {
 param (
     [switch]$ModuleInstalls,
@@ -26,8 +32,6 @@ param (
     [switch]$Help
 )
 
-# New Version check
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/Invoke-RaderSec.psm1 -OutFile $env:USERPROFILE/WindowsPowerShell/RaderSecOps/Invoke-RaderSec.psm1 -Force
 
 Function Help {
     Write-Host "=====================RaderSec OpScript=====================" -ForegroundColor DarkMagenta
