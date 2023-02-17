@@ -19,6 +19,7 @@ Function Invoke-RaderSec {
         [switch]$Over50GB,
         [switch]$ATP_AIP,
         [switch]$DMARC_DKIM,
+        [switch]$Intune,
         [switch]$MFA_On,
         [switch]$PwnedUser,
         [switch]$PhishButton,
@@ -902,6 +903,10 @@ Function Invoke-RaderSec {
     if ($Update) {
         UpdateRaderSec
         break
+    }
+
+    Function Intune {
+        
     }
     
     
