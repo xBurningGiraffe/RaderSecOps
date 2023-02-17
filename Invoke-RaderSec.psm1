@@ -1,10 +1,4 @@
 ﻿# RaderSec Client Onboarding Script
- 
-Function Update-RaderSec {
-    cd $env:USERPROFILE
-    Invoke-WebRequest -Uri https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/Invoke-RaderSec.psm1 -OutFile 'OneDrive - RaderSolutions/Documents/WindowsPowerShell/Modules/RaderSecOps/Invoke-RaderSec.psm1'
-    Write-Host "The RaderSecOps module has been updated"
-}
 Function Invoke-RaderSec {
 param (
     [switch]$ModuleInstalls,
@@ -29,7 +23,8 @@ param (
     [switch]$PwnedUser,
     [switch]$PhishButton,
     [switch]$Menu,
-    [switch]$Help
+    [switch]$Help,
+    [switch]$Update
 )
 
 
@@ -37,7 +32,7 @@ Function Help {
     Write-Host "=====================RaderSec OpScript=====================" -ForegroundColor DarkMagenta
     Write-Host "Usage: Invoke-RaderSec [-ModuleInstalls][-FullOnboard][-OrgCustomization][-PhinConfig]" -ForegroundColor DarkRed
     Write-Host "[-OrgAudit][-MboxAudit][-OutboundSpam][-AntiSpam][-AntiPhish][-AntiMal][-SafeAttach][-SafeLinks][-MFAPolicy]" -ForegroundColor DarkRed
-    Write-Host "[-AIPPolicy][-NAOnlyPolicy][-50GBMail][-ATP_AIP][-DMARC_DKIM][-MFA_On][-PwnedUser][-PhishButton][-Menu][-Help]" -ForegroundColor DarkRed
+    Write-Host "[-AIPPolicy][-NAOnlyPolicy][-50GBMail][-ATP_AIP][-DMARC_DKIM][-MFA_On][-PwnedUser][-PhishButton][-Menu][-Help][-Update]" -ForegroundColor DarkRed
 }
 if ($Help) {
     Help
