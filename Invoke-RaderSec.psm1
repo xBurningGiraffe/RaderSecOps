@@ -899,9 +899,9 @@ Function UpdateRaderSec{
     Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
 
     Expand-Archive $FolderPath\RaderSecOps.zip -DestinationPath $FolderPath -Force
-    Move-Item $FolderPath\RaderSecOps-main $FolderPath\RaderSecOps
+    Move-Item $FolderPath\RaderSecOps-main $FolderPath\RaderSecOps -Force
     Write-Output 'Import-Module -Name RaderSecOps' > $Profile
-    Write-Output 'Import-Module -Name '($env:ProgramFiles)\WindowsPowerShell\Module\RaderSecOps\Start-IntuneManagement.psm1'' >> $Profile
+    Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Module\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
     Import-Module -Name RaderSecOps
 }
     if ($Update) {
