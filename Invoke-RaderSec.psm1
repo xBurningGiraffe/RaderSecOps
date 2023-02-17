@@ -900,19 +900,19 @@ $FileCheck = Test-Path $FolderPath\WindowsPowerShell
 $ModuleCheck = Test-Path $FileCheck\Modules
 
 if ($FileCheck) {
-  New-Item -ItemType Directory -Path $FolderPath\WindowsPowerShell -Force
+  New-Item -ItemType Directory -Path $FolderPath\WindowsPowerShell 
 }
 if ($ModuleCheck) {
-  New-Item -ItemType Directory -Path $FolderPath\WindowsPowerShell\Modules -Force
+  New-Item -ItemType Directory -Path $FolderPath\WindowsPowerShell\Modules
 }
 
-Expand-Archive -Path $DownloadPath -DestinationPath $FolderPath\WindowsPowerShell\Modules -Force
+Expand-Archive -Path $DownloadPath -DestinationPath $FolderPath\WindowsPowerShell\Modules
 Move-Item '.\OneDrive - Rader Solutions\Documents\WindowsPowerShell\Modules\RaderSecOps-main\' '.\OneDrive - Rader Solutions\Documents\WindowsPowerShell\Modules\RaderSecOps'
 Import-Module $FolderPath\WindowsPowerShell\Modules\RaderSecOps\Invoke-RaderSec.psm1
 }
 if ($Update) {
     UpdateRaderSec
-    return
+    break
 }
 
 
