@@ -26,6 +26,8 @@ param (
     [switch]$Help
 )
 
+# New Version check
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/Invoke-RaderSec.psm1 -OutFile $env:USERPROFILE/WindowsPowerShell/RaderSecOps/Invoke-RaderSec.psm1 -Force
 
 Function Help {
     Write-Host "=====================RaderSec OpScript=====================" -ForegroundColor DarkMagenta
