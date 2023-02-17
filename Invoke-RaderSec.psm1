@@ -1,4 +1,4 @@
-﻿# RaderSec Client Onboarding Script
+# RaderSec Client Onboarding Script
 Function Invoke-RaderSec {
 param (
     [switch]$ModuleInstalls,
@@ -32,7 +32,7 @@ Function Help {
     Write-Host "=====================RaderSec OpScript=====================" -ForegroundColor DarkMagenta
     Write-Host "Usage: Invoke-RaderSec [-ModuleInstalls][-FullOnboard][-OrgCustomization][-PhinConfig]" -ForegroundColor DarkRed
     Write-Host "[-OrgAudit][-MboxAudit][-OutboundSpam][-AntiSpam][-AntiPhish][-AntiMal][-SafeAttach][-SafeLinks][-MFAPolicy]" -ForegroundColor DarkRed
-    Write-Host "[-AIPPolicy][-NAOnlyPolicy][-50GBMail][-ATP_AIP][-DMARC_DKIM][-MFA_On][-PwnedUser][-PhishButton][-Menu][-Help][-Update]" -ForegroundColor DarkRed
+    Write-Host "[-AIPPolicy][-NAOnlyPolicy][-50GBMail][-ATP_AIP][-DMARC_DKIM][-MFA_On][-PwnedUser][-PhishButton][-Menu][-Help]" -ForegroundColor DarkRed
 }
 if ($Help) {
     Help
@@ -246,6 +246,7 @@ Function OnboardOption {
 }
 if ($Menu) {
     $Menu = OnboardOption
+    return
 }
 
 
@@ -271,6 +272,7 @@ Function ModuleInstalls {
 }
 if ($ModuleInstalls) {
     ModuleInstalls
+    return
 }
 
 
@@ -302,6 +304,7 @@ if ($FullOnboard) {
     Connect-AIPService
     Connect-IPPSSession
     FullOnboard
+    return
 }
 
 # Enable Organization Customization
@@ -322,6 +325,7 @@ if ($OrgCustomization) {
     Connect-ExchangeOnline
     OrgCustomization
     OrgCustomizationCheck
+    return
 }
 
 # Enable Org-Wide Auditing
@@ -343,6 +347,7 @@ Write-Host "--------------------------------------------------------------------
 if ($OrgAudit) {
     Connect-ExchangeOnline
     OrgAuditing
+    return
 }
 
 # Enable Litigation Hold for licensed users
@@ -418,6 +423,7 @@ if ($PhinConfig) {
     PhinAllows
     PhinSim
     Disconnect-ExchangeOnline
+    return
 }
 
 # Mailbox Auditing
@@ -440,6 +446,7 @@ if ($MboxAudit) {
     Connect-ExchangeOnline
     Connect-MsolService
     MboxAudit
+    return
 } 
 
 
@@ -479,6 +486,7 @@ if ($OutboundSpam) {
     Connect-ExchangeOnline
     Connect-IPPSSession
     O365OutboundSpam
+    return
 }
 
 
@@ -498,6 +506,7 @@ if ($AntiSpam) {
     Connect-ExchangeOnline
     Connect-IPPSSession
     O365AntiSpam
+    return
 }
 
 
@@ -518,6 +527,7 @@ if ($AntiPhish) {
     Connect-ExchangeOnline
     Connect-IPPSSession
     O365AntiPhish
+    return
 }
 
 
@@ -540,6 +550,7 @@ if ($AntiMal) {
     Connect-ExchangeOnline
     Connect-IPPSSession
     O365AntiMal
+    return
 }
 
 
@@ -562,6 +573,7 @@ if ($SafeAttach) {
     Connect-ExchangeOnline
     Connect-IPPSSession
     O365SafeAttach
+    return
 }
 
 
@@ -581,6 +593,7 @@ Function O365SafeLinks {
     Connect-ExchangeOnline
     Connect-IPPSSession
     O365SafeLinks
+    return
 }
 
 # Azure Conditional Access Policy - Any user exclusions other than the ones below should be added afterward (see Exclude Users from CA Policy)
@@ -610,6 +623,12 @@ Function MFAPolicy {
         Write-Host "MFA Conditional Access Policy has been created." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
 }
+}
+if ($MFAPolicy) {
+    Connect-ExchangeOnline
+    Connect-AzureAD
+    MFAPolicy
+
 }
 
 # N.America Logins Only Policy
@@ -694,6 +713,7 @@ if ($AIPPolicy) {
     Connect-ExchangeOnline
     Connect-AipService
     AIPPolicy
+    return
 }
 elseif ($ATP_AIP) {
     Connect-ExchangeOnline
@@ -704,6 +724,7 @@ elseif ($ATP_AIP) {
     O365AntiMal
     O365SafeAttach
     O365SafeLinks
+    return
 }
 
 # Function LicenseCheck {
@@ -747,6 +768,7 @@ Function PwnedUser {
 }
 if ($PwnedUser) {
     PwnedUser
+    return
 }
 
 Function DMARCDKIM {
@@ -803,6 +825,7 @@ Function PhishButton {
 }
 if ($PhishButton) {
     PhishButton
+    return
 }
 
 # Enable Conditional Access policy - Make sure users are appropriately added
@@ -829,6 +852,7 @@ Function EnableMFA{
 if ($MFA_On) {
     Connect-AzureAD
     EnableMFA
+    return
 }
 
 
@@ -851,6 +875,7 @@ Function 50GBMail {
 if ($50GBMail) {
     Connect-ExchangeOnline
     50GBMail
+    return
 }
 
 #Function CAUserExclusion {
@@ -865,6 +890,30 @@ if ($50GBMail) {
  #   }
 #
 #}
+
+Function UpdateRaderSec {
+$FolderPath = "$($env:USERPROFILE)\OneDrive - Rader Solutions\Documents"
+$Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
+$DownloadPath = "$folderPath\RaderSecOps.zip"
+Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
+$FileCheck = Test-Path $FolderPath\WindowsPowerShell
+$ModuleCheck = Test-Path $FileCheck\Modules
+
+if ($FileCheck) {
+  New-Item -ItemType Directory -Path $FolderPath\WindowsPowerShell -Force
+}
+if ($ModuleCheck) {
+  New-Item -ItemType Directory -Path $FolderPath\WindowsPowerShell\Modules -Force
+}
+
+Expand-Archive -Path $DownloadPath -DestinationPath $FolderPath\WindowsPowerShell\Modules -Force
+Move-Item '.\OneDrive - Rader Solutions\Documents\WindowsPowerShell\Modules\RaderSecOps-main\' '.\OneDrive - Rader Solutions\Documents\WindowsPowerShell\Modules\RaderSecOps'
+Import-Module $FolderPath\WindowsPowerShell\Modules\RaderSecOps\Invoke-RaderSec.psm1
+}
+if ($Update) {
+    UpdateRaderSec
+    return
+}
 
 
 # Clear variables
