@@ -5,5 +5,4 @@
 	PowerShellVersion = '5.1'
 	FunctionsToExport = '*'
 	RootModule = 'Invoke-RaderSec.psm1'
-	Dependencies = 'Start-IntuneManagement.psm1'
 }
