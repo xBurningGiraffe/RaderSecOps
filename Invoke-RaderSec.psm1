@@ -896,9 +896,13 @@ Function Invoke-RaderSec {
     $FilePath = "$env:ProgramFiles\WindowsPowerShell\Modules"
     $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
     Invoke-WebRequest -Uri $Url -OutFile main.zip
+    $CheckItem = Test-Path $FilePath\RaderSecOps
+    if ($CheckItem) {
+        Remove-Item $FilePath\RaderSecOps -Confirm:$false -Recurse
+    }
     Expand-Archive .\main.zip -DestinationFolder $FilePath -Force
     Move-Item $FilePath\RaderSecOps-main\ $FilePath\RaderSecOps
-    Import-Module $Filepath\WindowsPowerShell\Modules\RaderSecOps\Invoke-RaderSec.psm1
+    Import-Module -Name RaderSecOps
     }
     if ($Update) {
         UpdateRaderSec
@@ -906,7 +910,12 @@ Function Invoke-RaderSec {
     }
 
     Function Intune {
-        
+        Import-Module .\Start-IntuneManagement.psm1
+        Start-IntuneManagement
+    }
+    if ($Intune) {
+        Intune
+        break
     }
     
     
