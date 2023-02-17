@@ -1,4 +1,4 @@
-﻿# RaderSec Client Onboarding Script
+# RaderSec Client Onboarding Script
 Function Invoke-RaderSec {
     param (
         [switch]$ModuleInstalls,
@@ -36,7 +36,7 @@ Function Invoke-RaderSec {
     }
     if ($Help) {
         Help
-        exit
+        break
     }
     
     
@@ -246,7 +246,7 @@ Function Invoke-RaderSec {
     }
     if ($Menu) {
         $Menu = OnboardOption
-        exit
+        break
     }
     
     
@@ -272,7 +272,7 @@ Function Invoke-RaderSec {
     }
     if ($ModuleInstalls) {
         ModuleInstalls
-        exit
+        break
     }
     
     
@@ -304,7 +304,7 @@ Function Invoke-RaderSec {
         Connect-AIPService
         Connect-IPPSSession
         FullOnboard
-        exit
+        break
     }
     
     # Enable Organization Customization
@@ -325,7 +325,7 @@ Function Invoke-RaderSec {
         Connect-ExchangeOnline
         OrgCustomization
         OrgCustomizationCheck
-        exit
+        break
     }
     
     # Enable Org-Wide Auditing
@@ -347,7 +347,7 @@ Function Invoke-RaderSec {
     if ($OrgAudit) {
         Connect-ExchangeOnline
         OrgAuditing
-        exit
+        break
     }
     
     # Enable Litigation Hold for licensed users
@@ -423,7 +423,7 @@ Function Invoke-RaderSec {
         PhinAllows
         PhinSim
         Disconnect-ExchangeOnline
-        exit
+        break
     }
     
     # Mailbox Auditing
@@ -446,7 +446,7 @@ Function Invoke-RaderSec {
         Connect-ExchangeOnline
         Connect-MsolService
         MboxAudit
-        exit
+        break
     } 
     
     
@@ -486,7 +486,7 @@ Function Invoke-RaderSec {
         Connect-ExchangeOnline
         Connect-IPPSSession
         O365OutboundSpam
-        exit
+        break
     }
     
     
@@ -506,7 +506,7 @@ Function Invoke-RaderSec {
         Connect-ExchangeOnline
         Connect-IPPSSession
         O365AntiSpam
-        exit
+        break
     }
     
     
@@ -527,7 +527,7 @@ Function Invoke-RaderSec {
         Connect-ExchangeOnline
         Connect-IPPSSession
         O365AntiPhish
-        exit
+        break
     }
     
     
@@ -550,7 +550,7 @@ Function Invoke-RaderSec {
         Connect-ExchangeOnline
         Connect-IPPSSession
         O365AntiMal
-        exit
+        break
     }
     
     
@@ -573,7 +573,7 @@ Function Invoke-RaderSec {
         Connect-ExchangeOnline
         Connect-IPPSSession
         O365SafeAttach
-        exit
+        break
     }
     
     
@@ -593,7 +593,7 @@ Function Invoke-RaderSec {
         Connect-ExchangeOnline
         Connect-IPPSSession
         O365SafeLinks
-        exit
+        break
     }
     
     # Azure Conditional Access Policy - Any user exclusions other than the ones below should be added afterward (see Exclude Users from CA Policy)
@@ -713,7 +713,7 @@ Function Invoke-RaderSec {
         Connect-ExchangeOnline
         Connect-AipService
         AIPPolicy
-        exit
+        break
     }
     elseif ($ATP_AIP) {
         Connect-ExchangeOnline
@@ -724,7 +724,7 @@ Function Invoke-RaderSec {
         O365AntiMal
         O365SafeAttach
         O365SafeLinks
-        exit
+        break
     }
     
     # Function LicenseCheck {
@@ -768,7 +768,7 @@ Function Invoke-RaderSec {
     }
     if ($PwnedUser) {
         PwnedUser
-        exit
+        break
     }
     
     Function DMARCDKIM {
@@ -825,7 +825,7 @@ Function Invoke-RaderSec {
     }
     if ($PhishButton) {
         PhishButton
-        exit
+        break
     }
     
     # Enable Conditional Access policy - Make sure users are appropriately added
@@ -852,7 +852,7 @@ Function Invoke-RaderSec {
     if ($MFA_On) {
         Connect-AzureAD
         EnableMFA
-        exit
+        break
     }
     
     
@@ -875,7 +875,7 @@ Function Invoke-RaderSec {
     if ($50GBMail) {
         Connect-ExchangeOnline
         50GBMail
-        exit
+        break
     }
     
     #Function CAUserExclusion {
@@ -913,7 +913,7 @@ Function Invoke-RaderSec {
     }
     }
     
-    # Function for disconnecting and exiting
+    # Function for disconnecting and breaking
     Function Goodbye {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Disconnecting from sessions and closing. L8er boi."
