@@ -7,7 +7,7 @@ The Swiss Army knife module for RaderSecOps
 
 Install w/PowerShell
 cd $env:USERPROFILE
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/install.ps1
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/install.ps1 -OutFile install.ps1; .\install.ps1
 
 
 v1.0.0
