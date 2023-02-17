@@ -16,7 +16,7 @@ Function Invoke-RaderSec {
         [switch]$MFAPolicy,
         [switch]$AIPPolicy,
         [switch]$NAOnlyPolicy,
-        [switch]$50GBMail,
+        [switch]$Over50GB,
         [switch]$ATP_AIP,
         [switch]$DMARC_DKIM,
         [switch]$MFA_On,
@@ -32,7 +32,7 @@ Function Invoke-RaderSec {
         Write-Host "=====================RaderSec OpScript=====================" -ForegroundColor DarkMagenta
         Write-Host "Usage: Invoke-RaderSec [-ModuleInstalls][-FullOnboard][-OrgCustomization][-PhinConfig]" -ForegroundColor DarkRed
         Write-Host "[-OrgAudit][-MboxAudit][-OutboundSpam][-AntiSpam][-AntiPhish][-AntiMal][-SafeAttach][-SafeLinks][-MFAPolicy]" -ForegroundColor DarkRed
-        Write-Host "[-AIPPolicy][-NAOnlyPolicy][-50GBMail][-ATP_AIP][-DMARC_DKIM][-MFA_On][-PwnedUser][-PhishButton][-Menu][-Help]" -ForegroundColor DarkRed
+        Write-Host "[-AIPPolicy][-NAOnlyPolicy][-Over50GB][-ATP_AIP][-DMARC_DKIM][-MFA_On][-PwnedUser][-PhishButton][-Menu][-Help]" -ForegroundColor DarkRed
     }
     if ($Help) {
         Help
@@ -236,7 +236,7 @@ Function Invoke-RaderSec {
                 }
                 'O'{
                     Connect-ExchangeOnline
-                    50GBMail
+                    Over50GB
                 }
                 'Q'{
                     Goodbye
@@ -856,7 +856,7 @@ Function Invoke-RaderSec {
     }
     
     
-    Function 50GBMail {
+    Function Over50GB {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Getting mailboxes larger than 50 GB..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -872,9 +872,9 @@ Function Invoke-RaderSec {
         Write-Host "50 GB mailbox pull is complete" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
-    if ($50GBMail) {
+    if ($Over50GB) {
         Connect-ExchangeOnline
-        50GBMail
+        Over50GB
         break
     }
     
