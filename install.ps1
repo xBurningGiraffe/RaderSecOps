@@ -11,3 +11,4 @@ if (Test-Path $Profile) -eq $false)) {
 } elseif (Test-Path $Profile) -eq $true)) {
     echo 'Import-Module -Name RaderSecOps' >> $Profile
 }
+Import-Module -Name RaderSecOps
