@@ -797,8 +797,7 @@ if ($Updates)
         if  (Get-AzureADCurrentSessionInfo) {
             Disconnect-AzureAD
         }
-        if (Get-AzAccount
-         {
+        if (Get-AzAccount) {
             Disconnect-AzureAD
         }
         try {
