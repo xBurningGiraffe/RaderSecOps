@@ -213,6 +213,7 @@ Function Invoke-RaderSec {
                     DMARCDKIM
                 }
                 'B'{
+                    Connect-OrganizationAddInService
                     Connect-ExchangeOnline
                     PhishButton
                 }
