@@ -779,3 +779,5 @@ Function UpdateRaderSec{
         Disconnect-AzAccount
     }
    }
+   
+   WelcomeBanner
