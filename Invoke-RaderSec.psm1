@@ -1,6 +1,7 @@
 # RaderSecOps Script
 Function Invoke-RaderSec {
-    Function WelcomeBanner {
+
+Function WelcomeBanner {
         Start-Sleep -m 200
         Write-Host " NOTE: Run this with elevated privileges" -ForegroundColor DarkRed
         Write-Host "===============================================================" -ForegroundColor DarkCyan
@@ -778,6 +779,5 @@ Function UpdateRaderSec{
         Disconnect-AzureAD
         Disconnect-AzAccount
     }
-   }
-   
    WelcomeBanner
+}
