@@ -810,20 +810,20 @@ Function Invoke-RaderSec {
     
     
     # Add Cofense Protect 'Report Phishing' button as organization add-in
-    Function PhishButton {
-        $Manifest = Read-Host "Enter the Cofense Protect manifest file link (ex. https://cyberfish.io/ur/SyZo5KEoj/manifest.xml) "
-        $AddButton = New-App -OrganizationApp -Url $Manifest -ProvidedTo Everyone -DefaultStateforUser AlwaysEnabled
-        if ($null -eq $AddButton) {
+Function PhishButton {
+    $Manifest = Read-Host "Download the Cofense Protect file and enter the file path here: (ex. c:\users\user\Downloads\manifest_BJLbbVDGL.xml) "
+    $AddButton = New-OrganizationAddIn -ManifestPath $Manifest -AssignToEveryone -UserDefault Mandatory
+    if ($AddButton) {
+    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+    Write-Host  "Adding the Cofense Protect 'Report Phishing' button..."
+    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+    $AddButton
+    } else {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host  "Adding the Cofense Protect 'Report Phishing' button..."
+        Write-Host  "Cofense Protect 'Report Phishing' was added successfully." -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        $AddButton
-        } else {
-            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-            Write-Host  "Cofense Protect 'Report Phishing' was added successfully." -ForegroundColor DarkGreen
-            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        }
     }
+}
     if ($PhishButton) {
         PhishButton
         break
