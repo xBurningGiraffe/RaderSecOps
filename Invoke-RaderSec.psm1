@@ -1,6 +1,10 @@
 # RaderSecOps Script
 Function Invoke-RaderSec {
 
+param(
+        [switch]$Updates
+)
+
 Function WelcomeBanner {
         Start-Sleep -m 200
         Write-Host " NOTE: Run this with elevated privileges" -ForegroundColor DarkRed
@@ -738,7 +742,7 @@ Function PhishButton {
     #
     #}
     
-Function UpdateRaderSec{
+Function Updates{
     $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
     $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
     $DownloadPath = "$folderPath\RaderSecOps.zip"
@@ -752,6 +756,10 @@ Function UpdateRaderSec{
     Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
     Import-Module -Name RaderSecOps
 }
+if ($Updates) 
+        {
+        Updates
+        }
 
 
     Function Intune {
