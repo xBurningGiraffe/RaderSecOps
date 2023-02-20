@@ -782,10 +782,32 @@ if ($Updates)
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Disconnecting from sessions and closing. L8er boi."
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Disconnect-ExchangeOnline -Confirm:$false -InformationAction Ignore -ErrorAction SilentlyContinue
-        Disconnect-AipService
-        Disconnect-AzureAD
-        Disconnect-AzAccount
+        # Check ExchangeOnline connection
+        try {
+            Get-ConnectionInformation
+        }
+        catch {
+            Disconnect-ExchangeOnline
+        }
+        # Check AIPService Connection
+        try {
+            Get-AipService
+        }
+        catch {
+            Disconnect-AipService
+        }
+        try {
+            Get-AzureADCurrentSessionInfo
+        }
+        catch {
+            Disconnect-AzureAD
+        }
+        try {
+            Disconnect-AzAccount
+        }
+        catch {
+            $null
+        }
     }
    WelcomeBanner
 }
