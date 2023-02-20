@@ -213,8 +213,8 @@ Function Invoke-RaderSec {
                     DMARCDKIM
                 }
                 'B'{
-                    Connect-OrganizationAddInService
                     Connect-ExchangeOnline
+                    Connect-OrganizationAddInService
                     PhishButton
                 }
                 'M'{
@@ -813,7 +813,7 @@ Function Invoke-RaderSec {
     # Add Cofense Protect 'Report Phishing' button as organization add-in
 Function PhishButton {
     $Manifest = Read-Host "Download the Cofense Protect file and enter the file path here: (ex. c:\users\user\Downloads\manifest_BJLbbVDGL.xml) "
-    $AddButton = New-OrganizationAddIn -ManifestPath $Manifest -AssignToEveryone -UserDefault Mandatory
+    $AddButton = New-OrganizationAddIn -ManifestPath $Manifest -Locale 'en-US' -AssignToEveryone -UserDefault Mandatory
     if ($AddButton) {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host  "Adding the Cofense Protect 'Report Phishing' button..."
@@ -827,7 +827,7 @@ Function PhishButton {
 }
     if ($PhishButton) {
         PhishButton
-        break
+        
     }
     
     # Enable Conditional Access policy - Make sure users are appropriately added
@@ -940,6 +940,35 @@ Function UpdateRaderSec{
         Disconnect-AzureAD
         Disconnect-AzAccount
     }
-    
-    WelcomeBanner
+$Switches = ('ModuleInstalls',
+'FullOnboard',
+'OrgCustomization',
+'PhinConfig',
+'OrgAudit',
+'MboxAudit',
+'OutboundSpam',
+'AntiSpam',
+'AntiPhish',
+'AntiMal',
+'SafeAttach',
+'SafeLinks',
+'MFAPolicy',
+'AIPPolicy',
+'NAOnlyPolicy',
+'Over50GB',
+'ATP_AIP',
+'DMARC_DKIM',
+'Intune',
+'MFA_On',
+'PwnedUser',
+'PhishButton',
+'Menu',
+'Help',
+'Update')
+
+    if ($Switches) {
+        $null
+    } else {
+        WelcomeBanner
+    }
     }
