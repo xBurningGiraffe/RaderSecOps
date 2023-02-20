@@ -186,7 +186,7 @@ Function Invoke-RaderSec {
                 }
                 '14'{
                     Connect-ExchangeOnline
-                    Connect-IPPSession
+                    Connect-IPPSSession
                     PhinRule
                     PhinAllows
                     PhinSim
