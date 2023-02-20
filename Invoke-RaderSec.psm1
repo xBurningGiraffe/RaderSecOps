@@ -1,47 +1,5 @@
-# RaderSec Client Onboarding Script
+# RaderSecOps Script
 Function Invoke-RaderSec {
-    param (
-        [switch]$ModuleInstalls,
-        [switch]$FullOnboard,
-        [switch]$OrgCustomization,
-        [switch]$PhinConfig,
-        [switch]$OrgAudit,
-        [switch]$MboxAudit,
-        [switch]$OutboundSpam,
-        [switch]$AntiSpam,
-        [switch]$AntiPhish,
-        [switch]$AntiMal,
-        [switch]$SafeAttach,
-        [switch]$SafeLinks,
-        [switch]$MFAPolicy,
-        [switch]$AIPPolicy,
-        [switch]$NAOnlyPolicy,
-        [switch]$Over50GB,
-        [switch]$ATP_AIP,
-        [switch]$DMARC_DKIM,
-        [switch]$Intune,
-        [switch]$MFA_On,
-        [switch]$PwnedUser,
-        [switch]$PhishButton,
-        [switch]$Menu,
-        [switch]$Help,
-        [switch]$Update
-    )
-    
-    
-    Function Help {
-        Write-Host "=====================RaderSec OpScript=====================" -ForegroundColor DarkMagenta
-        Write-Host "Usage: Invoke-RaderSec [-ModuleInstalls][-FullOnboard][-OrgCustomization][-PhinConfig]" -ForegroundColor DarkRed
-        Write-Host "[-OrgAudit][-MboxAudit][-OutboundSpam][-AntiSpam][-AntiPhish][-AntiMal][-SafeAttach][-SafeLinks][-MFAPolicy]" -ForegroundColor DarkRed
-        Write-Host "[-AIPPolicy][-NAOnlyPolicy][-Over50GB][-ATP_AIP][-DMARC_DKIM][-MFA_On][-PwnedUser][-PhishButton][-Menu][-Help]" -ForegroundColor DarkRed
-    }
-    if ($Help) {
-        Help
-        break
-    }
-    
-    
-    
     Function WelcomeBanner {
         Start-Sleep -m 200
         Write-Host " NOTE: Run this with elevated privileges" -ForegroundColor DarkRed
@@ -246,10 +204,6 @@ Function Invoke-RaderSec {
             }
         } until ($script:OnboardType -eq 'Q')
     }
-    if ($Menu) {
-        $Menu = OnboardOption
-        break
-    }
     
     
     # PowerShell Module Installs
@@ -271,10 +225,6 @@ Function Invoke-RaderSec {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Required Powershell modules have been installed" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
-    if ($ModuleInstalls) {
-        ModuleInstalls
-        break
     }
     
     
@@ -299,15 +249,6 @@ Function Invoke-RaderSec {
         AIPPolicy
         NAOnlyPolicy
     }
-    if ($FullOnboard) {
-        Connect-ExchangeOnline 
-        Connect-AzureAD 
-        Connect-MsolService 
-        Connect-AIPService
-        Connect-IPPSSession
-        FullOnboard
-        break
-    }
     
     # Enable Organization Customization
     Function OrgCustomization {
@@ -322,12 +263,6 @@ Function Invoke-RaderSec {
         Write-Host "Organization Customization is now enabled" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         }
-    }
-    if ($OrgCustomization) {
-        Connect-ExchangeOnline
-        OrgCustomization
-        OrgCustomizationCheck
-        break
     }
     
     # Enable Org-Wide Auditing
@@ -345,11 +280,6 @@ Function Invoke-RaderSec {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "Organization-wide auditing is now enabled" -ForegroundColor DarkGreen
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
-    if ($OrgAudit) {
-        Connect-ExchangeOnline
-        OrgAuditing
-        break
     }
     
     # Enable Litigation Hold for licensed users
@@ -418,15 +348,7 @@ Function Invoke-RaderSec {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         }
     }
-    if ($PhinConfig) {
-        Connect-ExchangeOnline
-        Connect-IPPSession
-        PhinRule
-        PhinAllows
-        PhinSim
-        Disconnect-ExchangeOnline
-        break
-    }
+
     
     # Mailbox Auditing
     Function MboxAudit {
@@ -444,12 +366,7 @@ Function Invoke-RaderSec {
         Write-Host "Mailbox auditing is now enabled" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
-    if ($MboxAudit) {
-        Connect-ExchangeOnline
-        Connect-MsolService
-        MboxAudit
-        break
-    } 
+
     
     
     
@@ -484,12 +401,7 @@ Function Invoke-RaderSec {
         Write-Host "Office365 Outbound Spam Policy configuration complete" -ForegroundColor DarkYellow
         Write-Host  "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
-    if ($OutboundSpam) {
-        Connect-ExchangeOnline
-        Connect-IPPSSession
-        O365OutboundSpam
-        break
-    }
+
     
     
     # Function for Anti-Spam
@@ -504,12 +416,7 @@ Function Invoke-RaderSec {
         Write-Host "Office365 Anti-spam Policy configuration complete" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
-    if ($AntiSpam) {
-        Connect-ExchangeOnline
-        Connect-IPPSSession
-        O365AntiSpam
-        break
-    }
+
     
     
     # Default Anti-Phish Policy #
@@ -525,12 +432,7 @@ Function Invoke-RaderSec {
         Write-Host "Office365 AntiPhish Policy configuration complete" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
-    if ($AntiPhish) {
-        Connect-ExchangeOnline
-        Connect-IPPSSession
-        O365AntiPhish
-        break
-    }
+
     
     
     # Default Anti-Malware Policy #\
@@ -548,12 +450,7 @@ Function Invoke-RaderSec {
         Write-Host "Office365 Anti-Malware Policy configuration complete" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
-    if ($AntiMal) {
-        Connect-ExchangeOnline
-        Connect-IPPSSession
-        O365AntiMal
-        break
-    }
+
     
     
     # Safe Attachments Policy
@@ -571,12 +468,7 @@ Function Invoke-RaderSec {
         Write-Host "Safe Attachments policy has been created" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
-    if ($SafeAttach) {
-        Connect-ExchangeOnline
-        Connect-IPPSSession
-        O365SafeAttach
-        break
-    }
+
     
     
     # Safe Links Policy
@@ -591,11 +483,6 @@ Function Invoke-RaderSec {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Safe Links policy has been created" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }if ($SafeLinks) {
-        Connect-ExchangeOnline
-        Connect-IPPSSession
-        O365SafeLinks
-        break
     }
     
     # Azure Conditional Access Policy - Any user exclusions other than the ones below should be added afterward (see Exclude Users from CA Policy)
@@ -626,12 +513,7 @@ Function Invoke-RaderSec {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
     }
-    if ($MFAPolicy) {
-        Connect-ExchangeOnline
-        Connect-AzureAD
-        MFAPolicy
-    
-    }
+
     
     # N.America Logins Only Policy
     Function NAOnlyPolicy {
@@ -658,11 +540,6 @@ Function Invoke-RaderSec {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "N.America Logins Only Conditional Access Policy has been created." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
-    if ($NAOnlyPolicy) {
-        Connect-AzureAD
-        NAOnlyPolicy
-        Disconnect-AzureAD
     }
     
     #AIP Configuration
@@ -711,24 +588,7 @@ Function Invoke-RaderSec {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
     }
-    if ($AIPPolicy) {
-        Connect-ExchangeOnline
-        Connect-AipService
-        AIPPolicy
-        break
-    }
-    elseif ($ATP_AIP) {
-        Connect-ExchangeOnline
-        Connect-IPPSSession
-        O365OutboundSpam
-        O365AntiSpam
-        O365AntiPhish
-        O365AntiMal
-        O365SafeAttach
-        O365SafeLinks
-        break
-    }
-    
+
     # Function LicenseCheck {
     #    foreach ($Domain in $Domains){
     #        $GetPartner = Get-PartnerCustomer -domain $Domain
@@ -768,10 +628,7 @@ Function Invoke-RaderSec {
                 .\hawkinstall.ps1
             }
     }
-    if ($PwnedUser) {
-        PwnedUser
-        break
-    }
+
     
     Function DMARCDKIM {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -825,10 +682,6 @@ Function PhishButton {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
 }
-    if ($PhishButton) {
-        PhishButton
-        
-    }
     
     # Enable Conditional Access policy - Make sure users are appropriately added
     Function EnableMFA{
@@ -851,11 +704,7 @@ Function PhishButton {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         }
     }
-    if ($MFA_On) {
-        Connect-AzureAD
-        EnableMFA
-        break
-    }
+
     
     
     Function Over50GB {
@@ -873,11 +722,6 @@ Function PhishButton {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "50 GB mailbox pull is complete" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
-    if ($Over50GB) {
-        Connect-ExchangeOnline
-        Over50GB
-        break
     }
     
     #Function CAUserExclusion {
@@ -907,19 +751,13 @@ Function UpdateRaderSec{
     Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
     Import-Module -Name RaderSecOps
 }
-    if ($Update) {
-        UpdateRaderSec
-        break
-    }
+
 
     Function Intune {
         Import-Module .\Start-IntuneManagement.psm1
         Start-IntuneManagement
     }
-    if ($Intune) {
-        Intune
-        break
-    }
+
     
     
     # Clear variables
@@ -940,35 +778,4 @@ Function UpdateRaderSec{
         Disconnect-AzureAD
         Disconnect-AzAccount
     }
-$Switches = ('ModuleInstalls',
-'FullOnboard',
-'OrgCustomization',
-'PhinConfig',
-'OrgAudit',
-'MboxAudit',
-'OutboundSpam',
-'AntiSpam',
-'AntiPhish',
-'AntiMal',
-'SafeAttach',
-'SafeLinks',
-'MFAPolicy',
-'AIPPolicy',
-'NAOnlyPolicy',
-'Over50GB',
-'ATP_AIP',
-'DMARC_DKIM',
-'Intune',
-'MFA_On',
-'PwnedUser',
-'PhishButton',
-'Menu',
-'Help',
-'Update')
-
-    if ($Switches) {
-        $null
-    } else {
-        WelcomeBanner
-    }
-    }
+   }
