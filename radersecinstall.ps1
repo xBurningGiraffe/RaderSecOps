@@ -8,3 +8,4 @@ Move-Item $FolderPath\RaderSecOps-main $FolderPath\RaderSecOps
 Write-Output 'Import-Module -Name RaderSecOps' > $Profile
 Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
 Import-Module -Name RaderSecOps
+Remove-Item 'C:\Program Files\windowspowershell\modules>\RaderSecOps.zip'
