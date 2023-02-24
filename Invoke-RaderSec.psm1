@@ -1,6 +1,11 @@
 # RaderSecOps Script
 Function Invoke-RaderSec {
-    Function WelcomeBanner {
+
+param(
+        [switch]$Updates
+)
+
+Function WelcomeBanner {
         Start-Sleep -m 200
         Write-Host " NOTE: Run this with elevated privileges" -ForegroundColor DarkRed
         Write-Host "===============================================================" -ForegroundColor DarkCyan
@@ -76,17 +81,18 @@ Function Invoke-RaderSec {
                     Connect-AIPService
                     Connect-IPPSSession
                     FullOnboard
+                    Logout
                 }
                 '2'{
                     Connect-ExchangeOnline
                     OrgCustomization
                     OrgCustomizationCheck
-                    
+                    Logout
                 }
                 '3'{
                     Connect-ExchangeOnline
                     OrgAuditing
-                    
+                    Logout
                 }
                 '4'{
                     Connect-MsolService
@@ -97,43 +103,51 @@ Function Invoke-RaderSec {
                     Connect-ExchangeOnline
                     Connect-MsolService
                     MboxAudit
+                    Logout
                 }
                 '6'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365OutboundSpam
+                    Logout
                 }
                 '7'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiSpam
+                    Logout
                 }
                 '8'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiPhish
+                    Logout
                 }
                 '9'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiMal
+                    Logout
                     
                 }
                 '10'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365SafeAttach
+                    Logout
                 }
                 '11'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365SafeLinks
+                    Logout
                     
                 }
                 '12'{
                     Connect-ExchangeOnline
                     Connect-AzureAD
                     MFAPolicy
+                    Logout
                     
                     
                 }
@@ -141,6 +155,7 @@ Function Invoke-RaderSec {
                     Connect-ExchangeOnline
                     Connect-AipService
                     AIPPolicy
+                    Logout
                 }
                 '14'{
                     Connect-ExchangeOnline
@@ -148,13 +163,14 @@ Function Invoke-RaderSec {
                     PhinRule
                     PhinAllows
                     PhinSim
-                    Disconnect-ExchangeOnline
+                    Logout
                     
                 }
                 '15'{
                     Connect-AzureAD
                     NAOnlyPolicy
                     Disconnect-AzureAD
+                    Logout
                 }
     #            'L'{
     #                Connect-ExchangeOnline
@@ -169,20 +185,24 @@ Function Invoke-RaderSec {
                     Connect-ExchangeOnline
                     Connect-AzureAD
                     DMARCDKIM
+                    Logout
                 }
                 'B'{
                     Connect-ExchangeOnline
                     Connect-OrganizationAddInService
                     PhishButton
+                    Logout
                 }
                 'M'{
                     Connect-AzureAD
                     EnableMFA
+                    Logout
                 }
                 'L'{
                     Connect-MsolService
                     Connect-ExchangeOnline
                     DisableLit
+                    Logout
                 }
                 'T'{
                     Connect-ExchangeOnline
@@ -193,10 +213,12 @@ Function Invoke-RaderSec {
                     O365AntiMal
                     O365SafeAttach
                     O365SafeLinks
+                    Logout
                 }
                 'O'{
                     Connect-ExchangeOnline
                     Over50GB
+                    Logout
                 }
                 'Q'{
                     Goodbye
@@ -737,7 +759,7 @@ Function PhishButton {
     #
     #}
     
-Function UpdateRaderSec{
+Function Updates{
     $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
     $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
     $DownloadPath = "$folderPath\RaderSecOps.zip"
@@ -751,6 +773,10 @@ Function UpdateRaderSec{
     Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
     Import-Module -Name RaderSecOps
 }
+if ($Updates) 
+        {
+        Updates
+        }
 
 
     Function Intune {
@@ -767,15 +793,29 @@ Function UpdateRaderSec{
         Clear-Variable -Name $ClearVar -Scope script
     }
     }
+
+    Function Logout {
+        # Check Exchange Online connection
+    if (Get-ConnectionInformation) {
+            Disconnect-ExchangeOnline -Confirm:$false
+        }
+        }
+        # Check AIPService Connection
+    if (Get-AipService) {
+            Disconnect-AipService
+        }
+    if (Get-AzureADCurrentSessionInfo) {
+        Disconnect-AzureAD
+        }
+}
     
     # Function for disconnecting and breaking
     Function Goodbye {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Disconnecting from sessions and closing. L8er boi."
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Disconnect-ExchangeOnline -Confirm:$false -InformationAction Ignore -ErrorAction SilentlyContinue
-        Disconnect-AipService
+        # Check ExchangeOnline connection
+        Disconnect-ExchangeOnline -Confirm:$false
         Disconnect-AzureAD
-        Disconnect-AzAccount
-    }
-   }
+   WelcomeBanner
+}
