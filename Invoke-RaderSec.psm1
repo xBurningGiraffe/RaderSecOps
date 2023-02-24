@@ -778,27 +778,16 @@ if ($Updates)
         Updates
         }
 
-
-    Function Intune {
+Function Intune {
         Import-Module .\Start-IntuneManagement.psm1
         Start-IntuneManagement
     }
 
     
-    
-    # Clear variables
-    Function NullVariables {
-        $ClearVars = "Domains"
-        foreach ($ClearVar in $ClearVars) {
-        Clear-Variable -Name $ClearVar -Scope script
-    }
-    }
-
-    Function Logout {
+Function Logout {
         # Check Exchange Online connection
     if (Get-ConnectionInformation) {
             Disconnect-ExchangeOnline -Confirm:$false
-        }
         }
         # Check AIPService Connection
     if (Get-AipService) {
