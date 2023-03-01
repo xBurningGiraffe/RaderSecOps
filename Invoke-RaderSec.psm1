@@ -847,6 +847,7 @@ if ($Updates)
     }
     if (CtrlC) {
         ReturnMenu
-    } 
-    WelcomeBanner
+    } else {
+        WelcomeBanner
+        }
 }
