@@ -4,7 +4,7 @@ $DownloadPath = "$FolderPath\RaderSecOps.zip"
 Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
 Expand-Archive $FolderPath\RaderSecOps.zip -DestinationPath $FolderPath -Force
 Remove-Item $FolderPath\RaderSecOps -Recurse -Force -ErrorAction SilentlyContinue
-# Move-Item $FolderPath\RaderSecOps-main $FolderPath\RaderSecOps -Force
+Move-Item $FolderPath\RaderSecOps-main $FolderPath\RaderSecOps -Force
 $CheckProfile = (Get-Content $Profile)
 if ($null -eq $CheckProfile) {
 Write-Output 'Import-Module -Name RaderSecOps' > $Profile
