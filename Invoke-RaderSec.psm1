@@ -82,73 +82,73 @@ Function WelcomeBanner {
                     Connect-AIPService
                     Connect-IPPSSession
                     FullOnboard
-                    Logout
+                    
                 }
                 '2'{
                     Connect-ExchangeOnline
                     OrgCustomization
                     OrgCustomizationCheck
-                    Logout
+                    
                 }
                 '3'{
                     Connect-ExchangeOnline
                     OrgAuditing
-                    Logout
+                    
                 }
-                '4'{
+                <# '4'{
                     Connect-MsolService
                     Connect-ExchangeOnline
                     LitHold
-                }
+                } #>
                 '5'{
                     Connect-ExchangeOnline
                     Connect-MsolService
                     MboxAudit
-                    Logout
+                    
                 }
                 '6'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365OutboundSpam
-                    Logout
+                    
                 }
                 '7'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiSpam
-                    Logout
+                    
                 }
                 '8'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiPhish
-                    Logout
+                    
                 }
                 '9'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiMal
-                    Logout
+                    
                     
                 }
                 '10'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365SafeAttach
-                    Logout
+                    
                 }
                 '11'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365SafeLinks
-                    Logout
+                    
                     
                 }
                 '12'{
                     Connect-ExchangeOnline
                     Connect-AzureAD
                     MFAPolicy
-                    Logout
+                    
                     
                     
                 }
@@ -156,7 +156,7 @@ Function WelcomeBanner {
                     Connect-ExchangeOnline
                     Connect-AipService
                     AIPPolicy
-                    Logout
+                    
                 }
                 '14'{
                     Connect-ExchangeOnline
@@ -164,20 +164,19 @@ Function WelcomeBanner {
                     PhinRule
                     PhinAllows
                     PhinSim
-                    Logout
+                    
                     
                 }
                 '15'{
                     Connect-AzureAD
                     NAOnlyPolicy
-                    Disconnect-AzureAD
-                    Logout
+                    
                 }
-    #            'L'{
-    #                Connect-ExchangeOnline
-    #               Connect-PartnerCenter
-    #                LicenseCheck
-    #            }
+    <#            'L'{
+                    Connect-ExchangeOnline
+                    Connect-PartnerCenter
+                    LicenseCheck
+    #            } #>
                 'P'{
                     PwnedUser
                 }
@@ -186,24 +185,24 @@ Function WelcomeBanner {
                     Connect-ExchangeOnline
                     Connect-AzureAD
                     DMARCDKIM
-                    Logout
+                    
                 }
                 'B'{
                     Connect-ExchangeOnline
                     Connect-OrganizationAddInService
                     PhishButton
-                    Logout
+                    
                 }
                 'M'{
                     Connect-AzureAD
                     EnableMFA
-                    Logout
+                    
                 }
                 'L'{
                     Connect-MsolService
                     Connect-ExchangeOnline
                     DisableLit
-                    Logout
+                    
                 }
                 'T'{
                     Connect-ExchangeOnline
@@ -214,12 +213,12 @@ Function WelcomeBanner {
                     O365AntiMal
                     O365SafeAttach
                     O365SafeLinks
-                    Logout
+                    
                 }
                 'O'{
                     Connect-ExchangeOnline
                     Over50GB
-                    Logout
+                    
                 }
                 'Q'{
                     Goodbye
@@ -272,18 +271,31 @@ Function WelcomeBanner {
     # Enable Organization Customization
     Function OrgCustomization {
     $GetOrgCust = (Get-OrganizationConfig).IsDehydrated
-    if ($GetOrgCust -ne $True) {
+    if ($true -eq $GetOrgCust) {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Enabling Organization Customization..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Enable-OrganizationCustomization
-    } else {
+        try {
+            Enable-OrganizationCustomization
+        }
+        catch {
+            if ($_.Exception.GetType().FullName -eq 'System.InvalidOperationException' -and $_.Exception.Message -match 'This operation is not required. Organization is already enabled') {
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+                Write-Host "Organization is already enabled for customization." -ForegroundColor DarkGreen
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            }
+            else {
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+                Write-Host "An error occurred: $($_.Exception.Message)" -ForegroundColor DarkRed
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            }
+        } elseif ($false -eq $GetOrgCust) {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Organization Customization is now enabled" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        }
     }
-    
+}
+}
     # Enable Org-Wide Auditing
     Function OrgAuditing {
     $CheckAuditing = Get-AdminAuditLogConfig | Format-List UnifiedAuditLogIngestionEnabled
@@ -292,17 +304,15 @@ Function WelcomeBanner {
     Write-Host "Enabling Organization-Wide Auditing" -ForegroundColor DarkYellow 
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     do {
-    
         $EnableAuditing
-    
     } until ($CheckAuditing -eq $true)
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "Organization-wide auditing is now enabled" -ForegroundColor DarkGreen
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
+}
     
     # Enable Litigation Hold for licensed users
-    Function LitHold {
+    <#Function LitHold {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Enabling litigation hold for all licensed users..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -315,13 +325,13 @@ Function WelcomeBanner {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Litigation hold is now enabled" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
+    } #>
     
     Function PhinRule {
         $PhinRule = "Bypass Spam Filtering & SafeLinks (Phin)"
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
         $BypassSpam = (Get-TransportRule).Name | Where-Object -FilterScript {$_ -eq $PhinRule}
-        if ($BypassSpam -match $PhinRule) {
+        if ($BypassSpam) {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin bypass spam filter rule already exists" -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -330,7 +340,7 @@ Function WelcomeBanner {
         Write-Host "Creating Phin bypass spam filtering rule..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         New-TransportRule -Name $PhinRule -Priority 0 -SenderIpRanges $SenderIPs -SetAuditSeverity DoNotAudit -SetSCL -1 -SetHeaderName "X-MS-Exchange-Organization-BypassFocusedInbox" -SetHeaderValue 1 -StopRuleProcessing $True
-        Start-Sleep -Seconds 60
+        Start-Sleep -Seconds 30
     }
         $BypassSpam
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -342,10 +352,14 @@ Function WelcomeBanner {
         $PhinAllows = @("~betterphish.com~","~shippingalerts.com~","~amazingdealz.net~","~berrysupply.net~","~coronacouncil.org~","~couponstash.net~","~creditsafetyteam.com~","~autheticate.com~","~notificationhandler.com~")
         $Phins = Get-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Adding Phin tenants to the allowlist" -ForegroundColor DarkYellow
+        Write-Host "Adding Phin tenants to the allow list" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        if ($Phins.Allows -notmatch $Phins.Value) {
-            New-TenantAllowBlockListItems -Allow -ListType Url -ListSubType AdvancedDelivery -Entries $PhinAllows -NoExpiration
+        if ($PhinAllows -notmatch $Phins.Value) {
+            try {
+                New-TenantAllowBlockListItems -Allow -ListType Url -ListSubType AdvancedDelivery -Entries $PhinAllows -NoExpiration
+        }
+            catch [System.ArgumentException]{
+                Write-Host "Tenant is already added to allow list"
         } else {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin allowed tenants have been added" -ForegroundColor DarkYellow
@@ -357,16 +371,21 @@ Function WelcomeBanner {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Creating Phin phishing override policy" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        $PhinAllows = @("~betterphish.com~","~shippingalerts.com~","~amazingdealz.net~","~berrysupply.net~","~coronacouncil.org~","~couponstash.net~","~creditsafetyteam.com~","~autheticate.com~","~notificationhandler.com~")
+        $PhinDomains = @("betterphish.com","shippingalerts.com","amazingdealz.net","berrysupply.net","coronacouncil.org","couponstash.net","creditsafetyteam.com","autheticate.com","notificationhandler.com")
         $SimCheck = Get-PhishSimOverridePolicy -Identity PhishSimOverridePolicy
-        if (!$SimCheck) {
-            New-PhishSimOverrideRule -Name PhishSimOverrideRule -Policy PhishSimOverridePolicy -Domains $PhinAllows -SenderIpRanges 198.2.177.227
-        } elseif ($SimCheck) {
-            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-            Write-Host "Phin phishing override policy has been created" -ForegroundColor DarkYellow
-            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        if ($SimCheck) {
+        try {
+            New-PhishSimOverrideRule -Name PhishSimOverrideRule -Policy PhishSimOverridePolicy -Domains $PhinDomains -SenderIpRanges 198.2.177.227
         }
+        catch {
+            Write-Host "PhishSimOverridePolicy already exists"
+        }
+        }
+        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        Write-Host "Phin phishing override policy has been created" -ForegroundColor DarkYellow
+        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
+}
 
     
     # Mailbox Auditing
@@ -391,22 +410,33 @@ Function WelcomeBanner {
     
     # OrganizationCustomization Check 2
     Function OrgCustomizationCheck {
-    if ($GetOrgCust -eq $False) {
+    if ($False -eq $GetOrgCustom) {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Making sure Organization Customization is enabled..." -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Enable-OrganizationCustomization
-    } elseif ($GetOrgCustom -eq $True) {
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Organization Customization is now enabled" -ForegroundColor DarkGreen
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    } else {
+        try {
+            Enable-OrganizationCustomization
+        }
+        catch {
+            if ($_.Exception.GetType().FullName -eq 'System.InvalidOperationException' -and $_.Exception.Message -match 'This operation is not required. Organization is already enabled') {
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+                Write-Host "Organization is already enabled for customization." -ForegroundColor DarkGreen
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            }
+            else {
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+                Write-Host "Enabling Organization Customization can take quite a while to propagate." -Foreground DarkMagenta
+                Write-Host "If you're seeing this error, re-run this script in 24 hours." -Foreground DarkMagenta
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            }
+        } else {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Enabling Organization Customization can take quite a while to propagate." -Foreground DarkMagenta
         Write-Host "If you receive an error about organization customization in the next section, re-run this script in 24 hours" -Foreground DarkMagenta
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        }
     }
-    }
+}
     
     # Function for Outbound Spam Policy
     Function O365OutboundSpam {
@@ -648,7 +678,7 @@ Function WelcomeBanner {
             }
     }
 
-    
+
     Function DMARCDKIM {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host  "Setting up DKIM..." -ForegroundColor DarkYellow
@@ -742,20 +772,8 @@ Function PhishButton {
         Write-Host "50 GB mailbox pull is complete" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
-    
-    #Function CAUserExclusion {
-    #    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    #    $UserExclusions = Read-Host "Enter the email address for each user you'd like to exclude from the conditional access policy "
-    #    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    #    $GetPolicy = Get-AzureADMSConditionalAccessPolicy | where {$_.DisplayName -eq "Require MFA"}
-    #    foreach ($UserExclusion in $UserExclusions) {
-    #        $ExID = Get-User -Identity $UserExclusion
-    #       $conditions.Users.ExcludeUsers = $ExID.ExternalDirectoryObjectId
-    #        Set-AzureADMSConditionalAccessPolicy -PolicyId $GetPolicy.Id -Conditions $conditions
-     #   }
-    #
-    #}
-    
+
+
 Function Updates{
     $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
     $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
@@ -775,44 +793,57 @@ if ($Updates)
         Updates
     }
 
-
     Function Intune {
         Import-Module .\Start-IntuneManagement.psm1
         Start-IntuneManagement
     }
 
-    
-    
-    # Clear variables
-    Function NullVariables {
-        $ClearVars = "Domains"
-        foreach ($ClearVar in $ClearVars) {
-        Clear-Variable -Name $ClearVar -Scope script
-    }
-    }
-
     Function Logout {
-        # Check Exchange Online connection
-    if (Get-ConnectionInformation) {
-            Disconnect-ExchangeOnline -Confirm:$false
+            $script:LogoutMenu = Read-Host -Prompt "Would you like to stay logged in?: "
+            Write-Host "    [Y] Return to main menu"
+            Write-Host "    [N] Log out and exit"
+            switch ($script:OnboardMenu){
+                'Y' {
+                    OnboardMenu
+                }
+                'N' {
+                    Goodbye
+                }
     }
-        # Check AIPService Connection
-    if (Get-AipService) {
-            Disconnect-AipService
-        }
-    if (Get-AzureADCurrentSessionInfo) {
-        Disconnect-AzureAD
-        }
 }
-    
-    # Function for disconnecting and breaking
+
     Function Goodbye {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Disconnecting from sessions and closing. L8er boi." -ForegroundColor DarkRed
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        # Check ExchangeOnline connection
-        Disconnect-ExchangeOnline -Confirm:$false
-        Disconnect-AzureAD
-    }
+    # Check Exchange Online connection
+        try {
+            if (Get-ConnectionInformation) {
+                Disconnect-ExchangeOnline -Confirm:$false
+            }
+        }
+        catch {
+            Write-Host "An error occurred: $($_.Exception.Message)"
+        }
+        # Check AIPService Connection
+        try {
+            if (Get-AipService) {
+                Disconnect-AipService
+            }
+        }
+        catch {
+            Write-Host "An error occurred: $($_.Exception.Message)"
+        }
+    # Check AzureAD Connection
+        try {
+            if (Get-AzureADConnection -ErrorAction SilentlyContinue) {
+                # Disconnect from the AzureAD module
+                Disconnect-AzureAD
+            }
+        }
+        catch {
+            Write-Host "An error occurred: $($_.Exception.Message)"
+        }
+}
     WelcomeBanner
 }
