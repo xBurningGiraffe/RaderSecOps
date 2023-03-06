@@ -10,3 +10,4 @@ if ($null -eq $CheckProfile) {
 Write-Output 'Import-Module -Name RaderSecOps' > $Profile
 Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
 }
+Remove-Item $DownloadPath
