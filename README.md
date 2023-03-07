@@ -9,7 +9,7 @@ Install w/PowerShell
 
 
 cd $env:USERPROFILE
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/install.ps1 -OutFile install.ps1; .\install.ps1
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/radersecinstall.ps1 -OutFile radersecinstall.ps1; .\radersecinstall.ps1
 
 
 v1.0.0
@@ -18,3 +18,7 @@ their cmdlets...but this will do for now
 
 v1.0.1
 - Integrated IntuneManagement from Micke-K
+
+v1.1.0
+- Removed switches, will write alternative module with switches and no menu
+- Configured logout function to check for existing connections
