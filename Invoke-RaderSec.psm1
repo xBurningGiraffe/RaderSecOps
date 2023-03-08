@@ -38,18 +38,18 @@ Function WelcomeBanner {
         Write-Host "    [1] Full Client Onboard" -ForegroundColor DarkGreen
         Write-Host "    [2] Organization Customization" -ForegroundColor DarkYellow
         Write-Host "    [3] Organization-wide Auditing" -ForegroundColor DarkYellow
-        Write-Host "    [4] Litigation Hold (no longer SOP)" -ForegroundColor DarkRed
-        Write-Host "    [5] Mailbox Auditing" -ForegroundColor DarkYellow
-        Write-Host "    [6] O365 Outbound Spam Policy" -ForegroundColor DarkYellow
-        Write-Host "    [7] O365 Anti-Spam Policy" -ForegroundColor DarkYellow
-        Write-Host "    [8] O365 Anti-Phish Policy" -ForegroundColor DarkYellow
-        Write-Host "    [9] O365 Anti-Malware Policy" -ForegroundColor DarkYellow
-        Write-Host "    [10] O365 Safe Attachments" -ForegroundColor DarkYellow
-        Write-Host "    [11] O365 Safe Links" -ForegroundColor DarkYellow
-        Write-Host "    [12] MFA Conditional Access Policy" -ForegroundColor DarkYellow
-        Write-Host "    [13] AIP Encryption Rule" -ForegroundColor DarkYellow
-        Write-Host "    [14] Phin M365 Policies" -ForegroundColor DarkYellow
-        Write-Host "    [15] North-America Only Conditional Access Policy" -ForegroundColor DarkYellow
+        Write-Host "    [4] Mailbox Auditing" -ForegroundColor DarkYellow
+        Write-Host "    [5] O365 Outbound Spam Policy" -ForegroundColor DarkYellow
+        Write-Host "    [6] O365 Anti-Spam Policy" -ForegroundColor DarkYellow
+        Write-Host "    [7] O365 Anti-Phish Policy" -ForegroundColor DarkYellow
+        Write-Host "    [8] O365 Anti-Malware Policy" -ForegroundColor DarkYellow
+        Write-Host "    [9] O365 Safe Attachments" -ForegroundColor DarkYellow
+        Write-Host "    [10] O365 Safe Links" -ForegroundColor DarkYellow
+        Write-Host "    [11] MFA Conditional Access Policy" -ForegroundColor DarkYellow
+        Write-Host "    [12] AIP Encryption Rule" -ForegroundColor DarkYellow
+        Write-Host "    [13] Phin M365 Policies" -ForegroundColor DarkYellow
+        Write-Host "    [14] North-America Only Conditional Access Policy" -ForegroundColor DarkYellow
+        Write-Host "    [15] Intune Policies" -ForegroundColor DarkYellow
         Write-Host " "
         Write-Host "------- Misc. O365 Options -------" -ForegroundColor DarkGreen
         Write-Host "    [O] Get Mailboxes over 50 GB" -ForegroundColor Cyan
@@ -100,51 +100,51 @@ Function WelcomeBanner {
                     Connect-ExchangeOnline
                     LitHold
                 } #>
-                '5'{
+                '4'{
                     Connect-ExchangeOnline
                     Connect-MsolService
                     MboxAudit
                     
                 }
-                '6'{
+                '5'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365OutboundSpam
                     
                 }
-                '7'{
+                '6'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiSpam
                     
                 }
-                '8'{
+                '7'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiPhish
                     
                 }
-                '9'{
+                '8'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiMal
                     
                     
                 }
-                '10'{
+                '9'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365SafeAttach
                     
                 }
-                '11'{
+                '10'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365SafeLinks
                     
                     
                 }
-                '12'{
+                '11'{
                     Connect-ExchangeOnline
                     Connect-AzureAD
                     MFAPolicy
@@ -152,13 +152,13 @@ Function WelcomeBanner {
                     
                     
                 }
-                '13'{
+                '12'{
                     Connect-ExchangeOnline
                     Connect-AipService
                     AIPPolicy
                     
                 }
-                '14'{
+                '13'{
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     PhinRule
@@ -167,10 +167,13 @@ Function WelcomeBanner {
                     
                     
                 }
-                '15'{
+                '14'{
                     Connect-AzureAD
                     NAOnlyPolicy
                     
+                }
+                '15'{
+                    Intune
                 }
     <#            'L'{
                     Connect-ExchangeOnline
