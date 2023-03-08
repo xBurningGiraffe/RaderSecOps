@@ -21,9 +21,9 @@
     Write-Output 'Import-Module -Name RaderSecOps' > $Profile
     Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
     }
-    Remove-Item main.zip
+    Remove-Item main.zip -Force
     try {
-    Remove-Item radersecinstall.ps1
+    Remove-Item radersecinstall.ps1 -Force
     }
     catch {
     Write-Error "Error "Error: $($_.Exception.Message)"
