@@ -798,7 +798,7 @@ if ($Updates) {
 }
 
     Function Intune {
-        Import-Module .\Start-IntuneManagement.psm1
+        Import-Module $env:ProgramFiles\WindowsPowerShell\Modules\Start-IntuneManagement.psm1
         Start-IntuneManagement
     }
 
