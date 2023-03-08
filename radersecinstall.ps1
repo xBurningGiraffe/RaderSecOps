@@ -4,10 +4,10 @@
     if (Get-ChildItem -Path 'C:\Program Files\windowspowershell\Modules\RaderSecOps') {
     try {
      Remove-Item 'C:\Program Files\windowspowershell\Modules\RaderSecOps' -Recurse -ErrorAction SilentlyContinue
-     }
-     catch {
+     } catch {
      Write-Error "Error: $($_.Exception.Message)"
      }
+}
     Move-Item 'C:\Program Files\windowspowershell\Modules\main\RaderSecOps-main' 'C:\Program Files\windowspowershell\Modules\RaderSecOps' -Force
     Remove-Item 'C:\Program Files\windowspowershell\Modules\main' -Recurse
     # Import new modules
@@ -21,10 +21,9 @@
     Write-Output 'Import-Module -Name RaderSecOps' > $Profile
     Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
     }
-    Remove-Item main.zip -Force
+    Remove-Item main.zip
     try {
-    Remove-Item radersecinstall.ps1 -Force
-    }
-    catch {
-    Write-Error "Error "Error: $($_.Exception.Message)"
+    Remove-Item radersecinstall.ps1
+    } catch {
+    Write-Error "Error: $($_.Exception.Message)"
     }
