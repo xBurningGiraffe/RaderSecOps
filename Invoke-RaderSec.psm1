@@ -783,13 +783,13 @@ Function Updates{
     Expand-Archive main.zip -DestinationPath $env:ProgramFiles\WindowsPowerShell\Modules\main -Force
     if (Get-ChildItem -Path 'C:\Program Files\windowspowershell\Modules\RaderSecOps') {
     try {
-     Remove-Item 'C:\Program Files\windowspowershell\Modules\RaderSecOps' -Recurse -ErrorAction SilentlyContinue
+     Remove-Item 'C:\Program Files\windowspowershell\Modules\RaderSecOps' -Recurse -Force -ErrorAction SilentlyContinue
      }
      catch {
      Write-Error "Error: $($_.Exception.Message)"
      }
     Move-Item 'C:\Program Files\windowspowershell\Modules\main\RaderSecOps-main' 'C:\Program Files\windowspowershell\Modules\RaderSecOps' -Force
-    Remove-Item 'C:\Program Files\windowspowershell\Modules\main' -Recurse
+    Remove-Item 'C:\Program Files\windowspowershell\Modules\main' -Recurse -Force
     # Import new modules
     Import-Module -Name RaderSecOps
     Import-Module -Name 'C:\Program Files\WindowsPowerShell\Modules\RaderSecOps\IntuneManagement.psd1'
