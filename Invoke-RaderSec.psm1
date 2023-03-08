@@ -306,12 +306,18 @@ Function WelcomeBanner {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "Enabling Organization-Wide Auditing" -ForegroundColor DarkYellow 
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    do {
-        $EnableAuditing
-    } until ($CheckAuditing -eq $true)
+    if ($CheckAuditing -eq $false) {
+        try {
+            $EnableAuditing
+        }
+        catch {
+            Write-Error "Error: $($_.Exception.Message)"
+        }
+    } else {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "Organization-wide auditing is now enabled" -ForegroundColor DarkGreen
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+    }
 }
     
     # Enable Litigation Hold for licensed users
@@ -334,22 +340,25 @@ Function WelcomeBanner {
         $PhinRule = "Bypass Spam Filtering & SafeLinks (Phin)"
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
         $BypassSpam = (Get-TransportRule).Name | Where-Object -FilterScript {$_ -eq $PhinRule}
-        if ($BypassSpam) {
-            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-            Write-Host "Phin bypass spam filter rule already exists" -ForegroundColor DarkYellow
-            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    } else {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Creating Phin bypass spam filtering rule..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        New-TransportRule -Name $PhinRule -Priority 0 -SenderIpRanges $SenderIPs -SetAuditSeverity DoNotAudit -SetSCL -1 -SetHeaderName "X-MS-Exchange-Organization-BypassFocusedInbox" -SetHeaderValue 1 -StopRuleProcessing $True
-        Start-Sleep -Seconds 30
-    }
-        $BypassSpam
+        if ($BypassSpam) {
+            try {
+                New-TransportRule -Name $PhinRule -Priority 0 -SenderIpRanges $SenderIPs -SetAuditSeverity DoNotAudit -SetSCL -1 -SetHeaderName "X-MS-Exchange-Organization-BypassFocusedInbox" -SetHeaderValue 1 -StopRuleProcessing $True
+
+            } catch [System.ArgumentNullException] {
+                Write-Error "Error: ExchangeConfigUnit parameter cannot be null."
+            } catch {
+                Write-Error "Error: $($_.Exception.Message)"
+            }
+        } else {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Phin bypass spam filter rule has been created" -ForegroundColor DarkYellow
+        Write-Host "$BypassSpam has been created" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    } 
+        }
+}
+        
     
     Function PhinAllows {
         $PhinAllows = @("~betterphish.com~","~shippingalerts.com~","~amazingdealz.net~","~berrysupply.net~","~coronacouncil.org~","~couponstash.net~","~creditsafetyteam.com~","~autheticate.com~","~notificationhandler.com~")
@@ -369,7 +378,7 @@ Function WelcomeBanner {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         }
     } 
-    
+    }
     Function PhinSim {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Creating Phin phishing override policy" -ForegroundColor DarkYellow
@@ -387,7 +396,6 @@ Function WelcomeBanner {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Phin phishing override policy has been created" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
 }
 
     
@@ -447,8 +455,16 @@ Function WelcomeBanner {
         Write-Host "Editing Office365 Outbound Spam Policy..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         $Outbound = (Get-HostedOutboundSpamFilterPolicy).Name
-        Set-HostedOutboundSpamFilterPolicy $Outbound -RecipientLimitExternalPerHour 400 -RecipientLimitInternalPerHour 800 -RecipientLimitPerDay 800 -ActionWhenThresholdReached Alert
-    
+        try {
+            Set-HostedOutboundSpamFilterPolicy $Outbound -RecipientLimitExternalPerHour 400 -RecipientLimitInternalPerHour 800 -RecipientLimitPerDay 800 -ActionWhenThresholdReached Alert
+        } catch [System.Management.Automation.ParameterBindingException] {
+            # This catch block will execute if the error is of type 'System.Management.Automation.ParameterBindingException'
+            Write-Error "Cannot process argument transformation on parameter 'Identity'."
+            Write-Error $_.Exception.Message
+        } catch {
+            # This catch block will execute for any other type of error
+            Write-Error $_.Exception.Message
+        }
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Office365 Outbound Spam Policy configuration complete" -ForegroundColor DarkYellow
         Write-Host  "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -463,7 +479,16 @@ Function WelcomeBanner {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         $Junk = "MoveToJmf"
         $Policy = (Get-HostedContentFilterPolicy).Name
-        Set-HostedContentFilterPolicy $Policy -BulkThreshold 7 -HighConfidenceSpamAction $Junk -HighConfidencePhishAction Quarantine -PhishSpamAction $Junk -PhishZapEnable $true -QuarantineRetentionPeriod 30 -EnableRegionBlockList $true -RegionBlockList @{Add="CN","RU","IR","KP","TR","TW","BR","RO","CZ","JP"} -SpamAction $Junk -SpamZapEnabled $true -InlineSafetyTipsEnabled $true
+        try {
+            Set-HostedContentFilterPolicy $Policy -BulkThreshold 7 -HighConfidenceSpamAction $Junk -HighConfidencePhishAction Quarantine -PhishSpamAction $Junk -PhishZapEnable $true -QuarantineRetentionPeriod 30 -EnableRegionBlockList $true -RegionBlockList @{Add="CN","RU","IR","KP","TR","TW","BR","RO","CZ","JP"} -SpamAction $Junk -SpamZapEnabled $true -InlineSafetyTipsEnabled $true
+        } catch [System.Management.Automation.ParameterBindingException] {
+            # This catch block will execute for any type of error that occurs
+            Write-Error "Cannot process argument transformation on parameter 'Identity'."
+            Write-Error $_.Exception.Message
+        } catch {
+            # This catch block will execute for any other type of error
+            Write-Error $_.Exception.Message
+        }
     
         Write-Host "Office365 Anti-spam Policy configuration complete" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
