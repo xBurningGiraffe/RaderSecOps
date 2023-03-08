@@ -784,13 +784,14 @@ Function Updates{
     Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
     Expand-Archive $FolderPath\RaderSecOps.zip -DestinationPath $FolderPath -Force
     Remove-Item $FolderPath\RaderSecOps -Recurse -Force -ErrorAction SilentlyContinue
-    Move-Item $FolderPath\RaderSecOps-main $FolderPath\RaderSecOps -Force
+    Move-Item $env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps-main $env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps -Force
    $ImportRadersec = 'Import-Module -Name RaderSecOps'
    $ImportIntune = 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"'
    $CheckProfile = (Get-Content $Profile)
    if ($CheckProfile -notcontains $ImportRadersec -or $ImportIntune) {
     Write-Output 'Import-Module -Name RaderSecOps' > $Profile
     Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
+}
 }
 if ($Updates) {
         Updates
