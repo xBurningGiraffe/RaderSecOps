@@ -13,12 +13,10 @@ $RaderSec_Path = "$env:ProgramFiles\WindowsPowershell\Modules\RaderSecOps"
     Remove-Item 'C:\Program Files\windowspowershell\Modules\main' -Recurse -ErrorAction SilentlyContinue
     # Import new modules
     Import-Module -Name RaderSecOps
-    Import-Module -Name 'C:\Program Files\WindowsPowerShell\Modules\RaderSecOps\IntuneManagement.psd1'
+    Import-Module -Name 'C:\Program Files\WindowsPowerShell\Modules\RaderSecOps\Start'
     # Add module imports to $Profile
    $ImportRadersec = 'Import-Module -Name RaderSecOps'
-   $ImportIntune = 'Import-Module -Name "C:\Program Files\WindowsPowerShell\Modules\RaderSecOps\IntuneManagement.psd1"'
    $CheckProfile = (Get-Content $Profile)
    if ($CheckProfile -notcontains $ImportRadersec -or $ImportIntune) {
     Write-Output 'Import-Module -Name RaderSecOps' > $Profile
-    Write-Output "Import-Module -Name $($ImportIntune)" >> $Profile
     }
