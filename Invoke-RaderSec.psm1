@@ -52,6 +52,7 @@ Function Invoke-RaderSec {
         Write-Host "    [M] Enable MFA Conditional Access Policy" -ForegroundColor Cyan
         Write-Host " "
         Write-Host "------------- Other --------------" -ForegroundColor DarkGreen
+        Write-Host "    [R] O365 Onboarding Recon Report" -ForegroundColor Magenta
         Write-Host "    [P] PwnedUser Log Collection (BEC)" -ForegroundColor Magenta
         Write-Host "    [B] Add Cofense Protect 'Report Phishing' Button" -ForegroundColor Magenta
         Write-Host "    [I] IPHunter - Extensive IP search tool" -ForegroundColor Magenta
@@ -162,6 +163,12 @@ Function Invoke-RaderSec {
     #               Connect-PartnerCenter
     #                LicenseCheck
     #            }
+                'R'{
+                    Connect-AzureAD
+                    Connect-ExchangeOnline
+                    Connect-MsolService 
+                    O365_Recon_Report
+                }
                 'P'{
                     PwnPost
                     PwnedUser
@@ -201,7 +208,7 @@ Function Invoke-RaderSec {
                     Over50GB
                 }
                 'I'{
-
+                    Rader_IPHunter
                 }
                 'Q'{
                     Goodbye
@@ -213,18 +220,18 @@ Function Invoke-RaderSec {
     
     # PowerShell Module Installs
     Function ModuleInstalls {
-        $Modules = @("ExchangeOnlineManagement","AzureAD","AIPService","MSOnline","PartnerCenter","OrganizationAddInService")
+        $Modules = @("ExchangeOnlineManagement","AzureAD","AIPService","MSOnline","PartnerCenter","OrganizationAddInService","AzureADPreview")
         foreach ($Module in $Modules){
             if ( ! ( Get-Module -Name "$Module" ) ) {
                 Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
                 Write-Host "Importing required Powershell modules..." -ForegroundColor DarkYellow
                 Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-                    Import-Module $Module
+                    Import-Module -Name $Module
                 } else {
                     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
                     Write-Host "Installing required Powershell modules.." -ForegroundColor DarkYellow
                     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-                    Install-Module $Module
+                    Install-Module -Name $Module -Force
                 }
         }
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -807,6 +814,10 @@ Function UpdateRaderSec{
     Function Intune {
         Start-IntuneManagement
     }
+
+    Function O365_Recon_Report {
+
+}
 
     
     
