@@ -163,8 +163,8 @@ Function Invoke-RaderSec {
     #                LicenseCheck
     #            }
                 'P'{
-                    PwnedUser
                     PwnPost
+                    PwnedUser
                 }
                 'D'{
                     Connect-AzAccount
@@ -614,40 +614,52 @@ Function Invoke-RaderSec {
     
     #        }
     # }
-    
-    Function PwnedUser {
-        $Pwned = Read-Host  'Enter the compromised user email address'
-        try {
-            $PwnData = @{
-                Company = 'Enter the company name '
-                User = $Pwned
-                Ticket = Read-Host 'Enter the ticket number '
-                IOC = Read-Host 'Enter the IOC '
-            }
-    
-            $PwnMessage = @{
-                "text" = "Alert: Security Incident"
-                    "sections" = @(
-                        @{
-                            "facts" = $PwnData.GetEnumerator() | ForEach-Object {
-                                @{
-                                    "name" = $_.Key
-                                    "value" = $_.Value
-                                }
+
+Function PwnPost {
+    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+    Write-Host "Connect to your Rader Solutions account: "
+    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+    Start-Sleep -s 30
+    Connect-AzureAD
+    $Pwned = Read-Host  'Enter the compromised user email address'
+    try {
+        $PwnData = @{
+            Company = 'Enter the company name '
+            User = $Pwned
+            Ticket = Read-Host 'Enter the ticket number '
+            IOC = Read-Host 'Enter the IOC '
+        }
+
+        $PwnMessage = @{
+            "text" = "Alert: Security Incident"
+                "sections" = @(
+                    @{
+                        "facts" = $PwnData.GetEnumerator() | ForEach-Object {
+                            @{
+                                "name" = $_.Key
+                                "value" = $_.Value
                             }
                         }
-                   )
-            }
-    
-            $message = $PwnMessage | ConvertTo-Json -Depth 99
-    
-            $PwnHook = "https://radersolutionscom.webhook.office.com/webhookb2/be1995c2-aeab-4b31-a861-a88f6a5ef312@f108a778-4734-4455-94ef-c8312c907109/IncomingWebhook/fbf79c2716c84b66a1a869338b59e630/baf7d50c-832c-4835-8ec2-35adb328ea6a"
-            
-            Invoke-RestMethod -Uri $PwnHook -Method Post -Body $message -ContentType "Application/Json"
-         } catch { 
-                Write-Error "Error posting message in Compromises Team channel: $($_.Exception.Message)" -ForegroundColor DarkRed 
-            }
+                    }
+               )
         }
+
+        $message = $PwnMessage | ConvertTo-Json -Depth 99
+
+        $PwnHook = Get-AzKeyVaultSecret -VaultName 'raderseckeys' -Name 'pwn-webhook' -AsPlainText
+        
+        Invoke-RestMethod -Uri $PwnHook -Method Post -Body $message -ContentType "Application/Json"
+     } catch { 
+            Write-Error "Error posting message in Compromises Team channel: $($_.Exception.Message)" -ForegroundColor DarkRed 
+        }
+    }
+    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+    Write-Host "Disconnecting from Rader Solutions Azure..."
+    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+    Disconnect-AzureAD
+}
+    
+    Function PwnedUser {
         $HawkCheck = Get-Module -ListAvailable -Name Hawk
             if ($HawkCheck) {
                 Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
