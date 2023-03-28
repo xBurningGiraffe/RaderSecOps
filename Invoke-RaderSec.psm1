@@ -56,6 +56,7 @@ Function Invoke-RaderSec {
         Write-Host "    [P] PwnedUser Log Collection (BEC)" -ForegroundColor Magenta
         Write-Host "    [B] Add Cofense Protect 'Report Phishing' Button" -ForegroundColor Magenta
         Write-Host "    [I] IPHunter - Extensive IP search tool" -ForegroundColor Magenta
+        Write-Host "    [IN] Deploy Intune Policies" -ForegroundColor Magenta
         Write-Host " "
         Write-Host "------------- Quit --------------" -ForegroundColor DarkGreen
         Write-Host "    [Q] Quit"  -ForegroundColor DarkRed
@@ -167,11 +168,12 @@ Function Invoke-RaderSec {
                     Connect-AzureAD
                     Connect-ExchangeOnline
                     Connect-MsolService 
-                    O365_Recon_Report
+                    Invoke-Rader_Recon
                 }
                 'P'{
                     PwnPost
-                    PwnedUser
+                    Disconnect-AzAccount -Confirm:$False -ErrorAction SilentlyContinue
+                    HawkRun
                 }
                 'D'{
                     Connect-AzAccount
@@ -209,6 +211,9 @@ Function Invoke-RaderSec {
                 }
                 'I'{
                     Rader_IPHunter
+                }
+                'IN'{
+                    Intune
                 }
                 'Q'{
                     Goodbye
@@ -623,11 +628,24 @@ Function Invoke-RaderSec {
     # }
 
 Function PwnPost {
+# Install Hawk module if not installed
+    $HawkCheck = Get-Module -ListAvailable -Name Hawk
+    if (! $($HawkCheck)) {
+        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        Write-Host "Installing HAWK module..." -ForegroundColor DarkYellow
+        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        Set-ExecutionPolicy RemoteSigned -Confirm:$false
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/T0pCyber/hawk/master/install.ps1 -OutFile .\hawkinstall.ps1
+        Unblock-File -Path .\hawkinstall.ps1
+        .\hawkinstall.ps1
+}
+
+# Post alert to compromises channel
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Write-Host "Connect to your Rader Solutions account: "
+    Write-Host "First, connect to your Rader Solutions account: "
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Start-Sleep -s 30
-    Connect-AzureAD
+    Connect-AzAccount
+    Start-Sleep -s 15
     $Pwned = Read-Host  'Enter the compromised user email address'
     try {
         $PwnData = @{
@@ -636,7 +654,6 @@ Function PwnPost {
             Ticket = Read-Host 'Enter the ticket number '
             IOC = Read-Host 'Enter the IOC '
         }
-
         $PwnMessage = @{
             "text" = "Alert: Security Incident"
                 "sections" = @(
@@ -650,7 +667,6 @@ Function PwnPost {
                     }
                )
         }
-
         $message = $PwnMessage | ConvertTo-Json -Depth 99
 
         $PwnHook = Get-AzKeyVaultSecret -VaultName 'raderseckeys' -Name 'pwn-webhook' -AsPlainText
@@ -659,29 +675,11 @@ Function PwnPost {
      } catch { 
             Write-Error "Error posting message in Compromises Team channel: $($_.Exception.Message)" -ForegroundColor DarkRed 
         }
-    }
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Write-Host "Disconnecting from Rader Solutions Azure..."
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Disconnect-AzureAD
+
 }
-    
-    Function PwnedUser {
-        $HawkCheck = Get-Module -ListAvailable -Name Hawk
-            if ($HawkCheck) {
-                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-                Write-Host "Checking for HAWK module..." -ForegroundColor DarkYellow
-                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-                Start-HawkUserInvestigation -UserPrincipalName $Pwned
-            } else {
-                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-                Write-Host  "Starting Hawk User Investigation..."
-                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-                Set-ExecutionPolicy RemoteSigned -Confirm:$false
-                Invoke-WebRequest -Uri https://raw.githubusercontent.com/T0pCyber/hawk/master/install.ps1 -OutFile .\hawkinstall.ps1
-                Unblock-File -Path .\hawkinstall.ps1
-                .\hawkinstall.ps1
-            }
+
+Function HawkRun {
+    Start-HawkUserInvestigation -UserPrincipalName $Pwned
 }
 
 Function DMARCDKIM {
@@ -814,11 +812,6 @@ Function UpdateRaderSec{
     Function Intune {
         Start-IntuneManagement
     }
-
-    Function O365_Recon_Report {
-
-}
-
     
     
     # Clear variables
@@ -838,4 +831,7 @@ Function UpdateRaderSec{
         Disconnect-AipService
         Disconnect-AzureAD
         Disconnect-AzAccount
+}
+
+WelcomeBanner
 }
