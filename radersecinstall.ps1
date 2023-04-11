@@ -1,22 +1,39 @@
-  # Pull RaderSecOps from GitHub
-$RaderSec_Path = "$env:ProgramFiles\WindowsPowershell\Modules\RaderSecOps"  
-  Invoke-WebRequest -Uri https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip -OutFile main.zip -ErrorAction SilentlyContinue
-    Expand-Archive main.zip -DestinationPath "$env:ProgramFiles\WindowsPowerShell\Modules\main" -Force -ErrorAction SilentlyContinue
-    if (Get-ChildItem -Path "$env:ProgramFiles\WindowsPowerShell\Modules\main") {
-    try {
-     Remove-Item $RaderSec_Path -Recurse -ErrorAction SilentlyContinue
-     } catch {
-     Write-Error "Error: $($_.Exception.Message)"
-     }
-}
-    Move-Item 'C:\Program Files\windowspowershell\Modules\main\RaderSecOps-main' 'C:\Program Files\windowspowershell\Modules\RaderSecOps' -Force
-    Remove-Item 'C:\Program Files\windowspowershell\Modules\main' -Recurse -ErrorAction SilentlyContinue
-    # Import new modules
-    Import-Module -Name RaderSecOps
-    Import-Module -Name 'C:\Program Files\WindowsPowerShell\Modules\RaderSecOps\Start'
-    # Add module imports to $Profile
-   $ImportRadersec = 'Import-Module -Name RaderSecOps'
-   $CheckProfile = (Get-Content $Profile)
-   if ($CheckProfile -notcontains $ImportRadersec -or $ImportIntune) {
-    Write-Output 'Import-Module -Name RaderSecOps' > $Profile
+    
+    
+    $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
+    $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
+    $DownloadPath = "$FolderPath\RaderSecOps.zip"
+    $ExtractPath = "$FolderPath\RaderSecOps"
+
+    # Check if the RaderSecOps folder exists and remove it if it does
+    if (Test-Path "$FolderPath\RaderSecOps") {
+        Remove-Item "$FolderPath\RaderSecOps" -Recurse -Force
     }
+    
+    # Download the RaderSecOps module from the URL
+    Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
+
+    # Extract the contents of the .zip file to a temporary folder
+    $TempPath = "$FolderPath\RaderSecOps-main"
+    Expand-Archive -Path $DownloadPath -DestinationPath $TempPath
+
+# If the extracted folder is named "RaderSecOps-main", move its contents to $ExtractPath
+    if (Test-Path "$TempPath\RaderSecOps-main") {
+        Move-Item "$TempPath\RaderSecOps-main\*" -Destination $ExtractPath
+    }
+
+# Remove the temporary folder
+    Remove-Item $TempPath -Recurse -Force
+
+    $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+      if (!(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name RaderSecOps') -or !(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"')) {
+    Write-Output 'Import-Module -Name RaderSecOps' >> $ProfilePath
+    Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $ProfilePath
+    }
+
+    Import-Module -Name RaderSecOps
+
+
+
+
+
