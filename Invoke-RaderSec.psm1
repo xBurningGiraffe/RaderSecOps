@@ -183,7 +183,6 @@ Function Invoke-RaderSec {
                 }
                 'B'{
                     Connect-ExchangeOnline
-                    Connect-OrganizationAddInService
                     PhishButton
                 }
                 'M'{
@@ -355,10 +354,24 @@ Function Invoke-RaderSec {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Creating Phin phishing override policy" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        $PhinAllows = @("~betterphish.com~","~shippingalerts.com~","~amazingdealz.net~","~berrysupply.net~","~coronacouncil.org~","~couponstash.net~","~creditsafetyteam.com~","~autheticate.com~","~notificationhandler.com~")
+        $PhinAllows = @(
+            "betterphish.com",
+            "shippingalerts.com",
+            "amazingdealz.net",
+            "berrysupply.net",
+            "coronacouncil.org",
+            "couponstash.net",
+            "creditsafetyteam.com",
+            "autheticate.com",
+            "notificationhandler.com",
+            "phinsecurity.com"
+            )
+
+        $PhishPolicy = "PhishSimOverridePolicy"
+        $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
         $SimCheck = Get-PhishSimOverridePolicy -Identity PhishSimOverridePolicy
         if (!$SimCheck) {
-            New-PhishSimOverrideRule -Name PhishSimOverrideRule -Policy PhishSimOverridePolicy -Domains $PhinAllows -SenderIpRanges 198.2.177.227
+            New-PhishSimOverridePolicy -Name PhishSimOverrideRule -Policy $PhishPolicy -Domains $PhinAllows -SenderIpRanges $SenderIPs
         } elseif ($SimCheck) {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin phishing override policy has been created" -ForegroundColor DarkYellow
@@ -727,6 +740,7 @@ Function PhishButton {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host  "Adding the Cofense Protect 'Report Phishing' button..."
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+    Connect-OrganizationAddInService
     $AddButton
     } else {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
