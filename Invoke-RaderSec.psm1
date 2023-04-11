@@ -213,7 +213,7 @@ Function Invoke-RaderSec {
                     Rader_IPHunter
                 }
                 'IN'{
-                    Intune
+                    Start-IntuneManagement
                 }
                 'U'{
                     UpdateRaderSec
@@ -820,7 +820,8 @@ Function UpdateRaderSec{
     Expand-Archive $FolderPath\RaderSecOps.zip -DestinationPath $FolderPath -Force
     Remove-Item $FolderPath\RaderSecOps -Recurse -Force
     Remove-Item $FolderPath\RaderSecOps-main -Recurse -Force
-    Move-Item $FolderPath\RaderSecOps-main $FolderPath\RaderSecOps -Force
+    Move-Item $FolderPath\RaderSecOps\RaderSecOps-main\* $FolderPath\RaderSecOps -Force
+    Remove-Item $FolderPath\RaderSecOps\RaderSecOps-main -Confirm:$false
     Write-Output 'Import-Module -Name RaderSecOps' > $Profile
     Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $Profile
     Import-Module -Name RaderSecOps
