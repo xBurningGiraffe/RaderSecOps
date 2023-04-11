@@ -839,17 +839,46 @@ Function UpdateRaderSec{
         Clear-Variable -Name $ClearVar -Scope script
     }
     }
+
+    if (Get-PSSession | Where-Object { $_.ConfigurationName -eq 'Microsoft.Exchange' }) {
+        Disconnect-ExchangeOnline -Confirm:$false -InformationAction Ignore -ErrorAction SilentlyContinue
+    } else {
+        Write-Output 'You are not currently connected to Exchange Online.'
+    }
     
     # Function for disconnecting and breaking
     Function Goodbye {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Disconnecting from sessions and closing. L8er boi."
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Disconnect-ExchangeOnline -Confirm:$false -InformationAction Ignore -ErrorAction SilentlyContinue
-        Disconnect-AipService
-        Disconnect-AzureAD
-        Disconnect-AzAccount
-}
 
+        try {
+            $CheckExo = Get-ExoMailbox -ResultSize 1
+        } catch [Microsoft.Exchange.Management.RestApiClient.RestClientException] {
+            Write-Output 'Disconnecting from Exchange Online...'
+            Disconnect-ExchangeOnline -Confirm:$false
+        }
+
+
+        try {
+            Disconnect-AipService
+        } catch {
+            Write-Output 'An error occurred while disconnecting from the Azure Information Protection service.'
+        }
+
+        try {
+            Disconnect-AzureAD -ErrorAction SilentlyContinue
+            Write-Output 'Disconnected from Azure AD.'
+        } catch [System.NullReferenceException] {
+            Write-Output 'Disconnected from Azure AD.' 
+        }
+        
+        try {
+            Disconnect-AzAccount -ErrorAction SilentlyContinue
+            Write-Output "Disconnected from AzAccount"
+        } catch {
+            Write-Output "Disconnected from AzAccount."
+        }
+    }
 WelcomeBanner
 }
