@@ -57,6 +57,7 @@ Function Invoke-RaderSec {
         Write-Host "    [B] Add Cofense Protect 'Report Phishing' Button" -ForegroundColor Magenta
         Write-Host "    [I] IPHunter - Extensive IP search tool" -ForegroundColor Magenta
         Write-Host "    [IN] Deploy Intune Policies" -ForegroundColor Magenta
+        Write-Host "    [U] Update RaderSecOps" -ForegroundColor Magenta
         Write-Host " "
         Write-Host "------------- Quit --------------" -ForegroundColor DarkGreen
         Write-Host "    [Q] Quit"  -ForegroundColor DarkRed
@@ -213,6 +214,9 @@ Function Invoke-RaderSec {
                 }
                 'IN'{
                     Intune
+                }
+                'U'{
+                    UpdateRaderSec
                 }
                 'Q'{
                     Goodbye
