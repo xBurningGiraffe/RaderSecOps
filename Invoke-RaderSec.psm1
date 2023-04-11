@@ -815,11 +815,10 @@ Function UpdateRaderSec{
     $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
     $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
     $DownloadPath = "$folderPath\RaderSecOps.zip"
+    Remove-Item $FolderPath\RaderSecOps -Recurse -Force
     Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
 
     Expand-Archive $FolderPath\RaderSecOps.zip -DestinationPath $FolderPath -Force
-    Remove-Item $FolderPath\RaderSecOps -Recurse -Force
-    Remove-Item $FolderPath\RaderSecOps-main -Recurse -Force
     Move-Item $FolderPath\RaderSecOps\RaderSecOps-main\* $FolderPath\RaderSecOps -Force
     Remove-Item $FolderPath\RaderSecOps\RaderSecOps-main -Confirm:$false
     Write-Output 'Import-Module -Name RaderSecOps' > $Profile
