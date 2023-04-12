@@ -854,7 +854,7 @@ Function UpdateRaderSec{
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
 
         try {
-            $CheckExo = Get-ExoMailbox -ResultSize 1
+            Get-ExoMailbox -ResultSize 1
         } catch [Microsoft.Exchange.Management.RestApiClient.RestClientException] {
             Write-Output 'Disconnecting from Exchange Online...'
             Disconnect-ExchangeOnline -Confirm:$false
