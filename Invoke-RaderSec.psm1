@@ -319,7 +319,7 @@ Function Invoke-RaderSec {
     }
     
     Function PhinRule {
-        $PhinRule = "Bypass Spam Filtering & SafeLinks (Phin)"
+        $PhinRule = "Bypass Focused Inbox for Phin"
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
         $BypassSpam = (Get-TransportRule).Name | Where-Object -FilterScript {$_ -eq $PhinRule}
         if ($BypassSpam -match $PhinRule) {
@@ -375,7 +375,8 @@ Function Invoke-RaderSec {
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
         $SimCheck = Get-PhishSimOverridePolicy -Identity PhishSimOverridePolicy
         if (!$SimCheck) {
-            New-PhishSimOverridePolicy -Name PhishSimOverrideRule -Policy $PhishPolicy -Domains $PhinAllows -SenderIpRanges $SenderIPs
+            New-PhishSimOverridePolicy -Name PhishSimOverridePolicy 
+            New-PhishSimOverrideRule -Name PhishSimOverrideRule -Policy $PhishPolicy -Domains $PhinAllows -SenderIpRanges $SenderIPs
         } elseif ($SimCheck) {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin phishing override policy has been created" -ForegroundColor DarkYellow

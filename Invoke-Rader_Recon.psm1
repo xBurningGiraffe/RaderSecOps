@@ -8,6 +8,7 @@ if(-not ($ADPreviewCheck)) {
 }
 
 Function ReportMenu {
+    
         Write-Host "_____________________________________________" -ForegroundColor DarkGreen
         Write-Host "_____________________________________________" -ForegroundColor DarkYellow
         Write-Host "_____________________________________________" -ForegroundColor DarkBlue
