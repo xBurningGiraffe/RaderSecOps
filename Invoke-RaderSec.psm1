@@ -92,11 +92,11 @@ Function Invoke-RaderSec {
                     OrgAuditing
                     
                 }
-                '4'{
+                <#'4'{
                     Connect-MsolService
                     Connect-ExchangeOnline
                     LitHold
-                }
+                }#>
                 '5'{
                     Connect-ExchangeOnline
                     Connect-MsolService
@@ -301,7 +301,7 @@ Function Invoke-RaderSec {
     }
     
     # Enable Litigation Hold for licensed users
-    Function LitHold {
+   <# Function LitHold {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Enabling litigation hold for all licensed users..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -314,43 +314,41 @@ Function Invoke-RaderSec {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Litigation hold is now enabled" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
+    }#> 
     
-    Function PhinRule {
+Function PhinRule {
         $PhinRule = "Bypass Focused Inbox for Phin"
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
-        $BypassSpam = (Get-TransportRule).Name | Where-Object -FilterScript {$_ -eq $PhinRule}
-        if ($BypassSpam -match $PhinRule) {
+        $BypassSpam = Get-TransportRule | Where-Object {$_.Name -eq $PhinRule}
+        if (!$BypassSpam) {
+            New-TransportRule -Name $PhinRule -Priority 0 -SenderIpRanges $SenderIPs -SetAuditSeverity DoNotAudit -SetSCL -1 -SetHeaderName "X-MS-Exchange-Organization-BypassFocusedInbox" -SetHeaderValue "True" -StopRuleProcessing $True
+            Start-Sleep -Seconds 15
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-            Write-Host "Phin bypass spam filter rule already exists" -ForegroundColor DarkYellow
+            Write-Host "Creating Phin bypass spam filter..." -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     } else {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Creating Phin bypass spam filtering rule..." -ForegroundColor DarkYellow
+        Write-Host "Phin bypass spam filter rule already exists" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        New-TransportRule -Name $PhinRule -Priority 0 -SenderIpRanges $SenderIPs -SetAuditSeverity DoNotAudit -SetSCL -1 -SetHeaderName "X-MS-Exchange-Organization-BypassFocusedInbox" -SetHeaderValue 1 -StopRuleProcessing $True
-        Start-Sleep -Seconds 60
     }
-        $BypassSpam
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Phin bypass spam filter rule has been created" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    } 
+} 
     
     Function PhinAllows {
-        $PhinAllows = @("~betterphish.com~","~shippingalerts.com~","~amazingdealz.net~","~berrysupply.net~","~coronacouncil.org~","~couponstash.net~","~creditsafetyteam.com~","~autheticate.com~","~notificationhandler.com~")
-        $Phins = Get-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery
+        $PhinAllows = @('~betterphish.com~','~shippingalerts.com~','~amazingdealz.net~','~berrysupply.net~','~coronacouncil.org~','~couponstash.net~','~creditsafetyteam.com~','~autheticate.com~','~notificationhandler.com~')
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Adding Phin tenants to the allowlist" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         if ($Phins.Allows -notmatch $Phins.Value) {
-            New-TenantAllowBlockListItems -Allow -ListType Url -ListSubType AdvancedDelivery -Entries $PhinAllows -NoExpiration
+            New-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery -Allow -Entries $PhinAllows -NoExpiration
         } else {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin allowed tenants have been added" -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         }
-    } 
+    }
     
     Function PhinSim {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -368,7 +366,6 @@ Function Invoke-RaderSec {
             "notificationhandler.com",
             "phinsecurity.com"
             )
-
         $PhishPolicy = "PhishSimOverridePolicy"
         $PhishRule = "PhishSimOverrideRule"
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
