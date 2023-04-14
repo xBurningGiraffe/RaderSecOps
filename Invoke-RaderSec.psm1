@@ -370,12 +370,26 @@ Function Invoke-RaderSec {
             )
 
         $PhishPolicy = "PhishSimOverridePolicy"
+        $PhishRule = "PhishSimOverrideRule"
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
-        $SimCheck = Get-PhishSimOverridePolicy -Identity PhishSimOverridePolicy
+        $SimCheck = Get-PhishSimOverridePolicy -Identity $PhishPolicy
+        $RuleCheck = Get-PhishSimOverrideRule -Identity $PhishRule
         if (!$SimCheck) {
-            New-PhishSimOverridePolicy -Name PhishSimOverridePolicy 
-            New-PhishSimOverrideRule -Name PhishSimOverrideRule -Policy $PhishPolicy -Domains $PhinAllows -SenderIpRanges $SenderIPs
-        } elseif ($SimCheck) {
+            try {
+            New-PhishSimOverridePolicy -Name $PhishPolicy
+            Start-Sleep -Seconds 15
+            New-PhishSimOverrideRule -Name $PhishRule -Policy $PhishPolicy -Domains $PhinAllows -SenderIpRanges $SenderIPs
+            } catch {
+                Write-Host "An error occurred while checking or creating the PhishSimOverridePolicy: $($_.Exception.Message)" -ForegroundColor DarkRed
+            }
+
+        } elseif (-not ($RuleCheck)) {
+            try {
+            New-PhishSimOverrideRule -Name $PhishRule -Policy $PhishPolicy -Domains $PhinAllows -SenderIpRanges $SenderIPs
+        } catch {
+            Write-Host "An error occurred while checking or creating the PhishSimOverrideRule: $($_.Exception.Message)" -ForegroundColor DarkRed
+        }
+        } else {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin phishing override policy has been created" -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
