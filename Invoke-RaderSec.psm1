@@ -287,7 +287,7 @@ Function Invoke-RaderSec {
     
     # Enable Org-Wide Auditing
     Function OrgAuditing {
-    $CheckAuditing = Get-AdminAuditLogConfig | Format-List UnifiedAuditLogIngestionEnabled
+    $CheckAuditing = Get-AdminAuditLogConfig
     $EnableAuditing = Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "Enabling Organization-Wide Auditing" -ForegroundColor DarkYellow 
@@ -296,7 +296,7 @@ Function Invoke-RaderSec {
     
         $EnableAuditing
     
-    } until ($CheckAuditing -eq $true)
+    } until ($CheckAuditing.AdminAuditLogEnabled -eq $true)
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "Organization-wide auditing is now enabled" -ForegroundColor DarkGreen
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
