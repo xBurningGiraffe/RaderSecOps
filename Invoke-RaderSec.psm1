@@ -292,11 +292,9 @@ Function Invoke-RaderSec {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "Enabling Organization-Wide Auditing" -ForegroundColor DarkYellow 
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    do {
-    
+    if (!$CheckAuditing.AdminAuditLogEnabled) {
         $EnableAuditing
-    
-    } until ($CheckAuditing.AdminAuditLogEnabled -eq $true)
+    }
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "Organization-wide auditing is now enabled" -ForegroundColor DarkGreen
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
