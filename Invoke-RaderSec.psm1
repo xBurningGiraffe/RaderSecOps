@@ -174,7 +174,6 @@ Function Invoke-RaderSec {
                 'P'{
                     PwnPost
                     Disconnect-AzAccount -Confirm:$False -ErrorAction SilentlyContinue
-                    HawkRun
                 }
                 'D'{
                     Connect-AzAccount
@@ -703,10 +702,8 @@ Function PwnPost {
             Write-Error "Error posting message in Compromises Team channel: $($_.Exception.Message)" -ForegroundColor DarkRed 
         }
 
-}
 
-Function HawkRun {
-    Start-HawkUserInvestigation -UserPrincipalName $Pwned
+Start-HawkUserInvestigation -UserPrincipalName $Pwned
 }
 
 Function DMARCDKIM {
