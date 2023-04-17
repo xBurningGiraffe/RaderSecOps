@@ -656,7 +656,7 @@ Function PhinRule {
 
 Function PwnPost {
 # Install Hawk module if not installed
-    $HawkCheck = Get-Module -ListAvailable -Name Hawk
+    $HawkCheck = Test-Path -Path "$($env:ProgramFiles)\WindowsPowershell\Modules\Hawk"
     if (! $($HawkCheck)) {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Installing HAWK module..." -ForegroundColor DarkYellow
