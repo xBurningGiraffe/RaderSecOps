@@ -29,6 +29,7 @@
       if (!(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name RaderSecOps') -or !(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"')) {
     Write-Output 'Import-Module -Name RaderSecOps' >> $ProfilePath
     Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $ProfilePath
+    Write-Output 'Import-Module -Name Hawk' >> $ProfilePath
     }
 
     Import-Module -Name RaderSecOps

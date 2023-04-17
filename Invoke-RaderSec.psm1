@@ -676,7 +676,7 @@ Function PwnPost {
     $Pwned = Read-Host  'Enter the compromised user email address'
     try {
         $PwnData = @{
-            Company = 'Enter the company name '
+            Company = Read-Host 'Enter the company name '
             User = $Pwned
             Ticket = Read-Host 'Enter the ticket number '
             IOC = Read-Host 'Enter the IOC '
