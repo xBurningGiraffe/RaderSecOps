@@ -1471,7 +1471,7 @@ function Import-ADMXPolicy
 
     $json = $intuneObj | ConvertTo-Json -Depth 20
 
-    $obj = Invoke-GraphRequest -Url "/deviceManagement/deviceConfigurations" -Body $json -Method "POST"
+    $obj = Invoke-GraphRequest -Uri "/deviceManagement/deviceConfigurations" -Body $json -Method "POST"
     
     if($obj)
     {
@@ -1951,7 +1951,7 @@ function Import-ADMXRegProfile
 
     $json = $intuneObj | ConvertTo-Json -Depth 20
 
-    $obj = Invoke-GraphRequest -Url "/deviceManagement/deviceConfigurations" -Body $json -Method "POST"
+    $obj = Invoke-GraphRequest -Uri "/deviceManagement/deviceConfigurations" -Body $json -Method "POST"
     
     if($obj)
     {

@@ -409,7 +409,6 @@ Function PhinRule {
         Write-Host "Mailbox auditing is now enabled" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     }
-
     
     
     
