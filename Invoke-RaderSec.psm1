@@ -317,7 +317,7 @@ Function Invoke-RaderSec {
     
 Function PhinRule {
         $PhinRule = "Bypass Focused Inbox for Phin"
-        $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
+        $SenderIPs = "198.2.177.227"
         $BypassSpam = Get-TransportRule | Where-Object {$_.Name -eq $PhinRule}
         if (!$BypassSpam) {
             New-TransportRule -Name $PhinRule -Priority 0 -SenderIpRanges $SenderIPs -SetAuditSeverity DoNotAudit -SetSCL -1 -SetHeaderName "X-MS-Exchange-Organization-BypassFocusedInbox" -SetHeaderValue "True" -StopRuleProcessing $True
@@ -336,15 +336,18 @@ Function PhinRule {
 } 
     
     Function PhinAllows {
-        $PhinAllows = @('~betterphish.com~','~shippingalerts.com~','~amazingdealz.net~','~berrysupply.net~','~coronacouncil.org~','~couponstash.net~','~creditsafetyteam.com~','~autheticate.com~','~notificationhandler.com~')
+        $Phins = @("*.betterphish.com/*","*.shippingalerts.com/*","*.amazingdealz.net/*","*.berrysupply.net/*","*.coronacouncil.org/*","*.couponstash.net/*","*.creditsafetyteam.com/*","*.authenticate.com/*","*.notificationhandler.com/*")
+        $GetPhins = foreach ($Phin in $Phins) {
+            Get-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery | Where-Object {$_.Value -eq $Phin}
+        }
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Adding Phin tenants to the allowlist" -ForegroundColor DarkYellow
+        Write-Host "Adding Phin URLs to the allowlist" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        if ($Phins.Allows -notmatch $Phins.Value) {
-            New-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery -Allow -Entries $PhinAllows -NoExpiration
+        if (-not ($Phins)) {
+            New-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery -Allow -Entries $Phins -NoExpiration
         } else {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-            Write-Host "Phin allowed tenants have been added" -ForegroundColor DarkYellow
+            Write-Host "Phin allowed URLs have been added" -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         }
     }

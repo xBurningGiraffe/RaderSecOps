@@ -252,9 +252,9 @@ function Add-FileToIntuneApp
 {
     param($appId, $appType, $appFile, $fileBody)
 
-    $contentVersion = Invoke-GraphRequest -Uri "/deviceAppManagement/mobileApps/$appId/$appType/contentVersions" -HttpMethod POST -Content "{}"
+    $contentVersion = Invoke-GraphRequest -Url "/deviceAppManagement/mobileApps/$appId/$appType/contentVersions" -HttpMethod POST -Content "{}"
     $contentVersionId = $contentVersion.id
-    $fileObj = Invoke-GraphRequest -Uri "/deviceAppManagement/mobileApps/$appId/$appType/contentVersions/$contentVersionId/files" -HttpMethod POST -Content (ConvertTo-Json $fileBody -Depth 5)
+    $fileObj = Invoke-GraphRequest -Url "/deviceAppManagement/mobileApps/$appId/$appType/contentVersions/$contentVersionId/files" -HttpMethod POST -Content (ConvertTo-Json $fileBody -Depth 5)
 
     if(-not $fileObj)
     {
@@ -272,7 +272,7 @@ function Add-FileToIntuneApp
     Send-IntuneFileToAzureStorage $fileObj.azureStorageUri $appFile "/deviceAppManagement/mobileApps/$appId/$appType/contentVersions/$contentVersionId/files/$($fileObj.Id)"
 
 	# Commit the file
-    $reponse = Invoke-GraphRequest -Uri "/deviceAppManagement/mobileApps/$appId/$appType/contentVersions/$contentVersionId/files/$($fileObj.Id)/commit" -HttpMethod POST -Content (ConvertTo-Json $fileEncryptionInfo -Depth 5)
+    $reponse = Invoke-GraphRequest -Url "/deviceAppManagement/mobileApps/$appId/$appType/contentVersions/$contentVersionId/files/$($fileObj.Id)/commit" -HttpMethod POST -Content (ConvertTo-Json $fileEncryptionInfo -Depth 5)
 
     Wait-IntuneFileState "/deviceAppManagement/mobileApps/$appId/$appType/contentVersions/$contentVersionId/files/$($fileObj.Id)" "CommitFile"
 
@@ -284,7 +284,7 @@ function Add-FileToIntuneApp
             fileName = $fiUpload.Name
     }
 
-    $reponse = Invoke-GraphRequest -Uri "/deviceAppManagement/mobileApps/$appId" -HttpMethod PATCH -Content (ConvertTo-Json $commitAppBody -Depth 5)
+    $reponse = Invoke-GraphRequest -Url "/deviceAppManagement/mobileApps/$appId" -HttpMethod PATCH -Content (ConvertTo-Json $commitAppBody -Depth 5)
 }
 
 function Wait-IntuneFileState
@@ -305,7 +305,7 @@ function Wait-IntuneFileState
 
 	while ((Get-Date) -lt $endWait)
 	{
-		$file = Invoke-GraphRequest -Uri $fileUri
+		$file = Invoke-GraphRequest -Url $fileUri
 
 		if ($file.uploadState -eq $successState)
 		{
@@ -398,7 +398,7 @@ function Request-RenewAzureStorageUpload
 {
     param($fileUri)
 
-    $fileObj = Invoke-GraphRequest -Uri "$fileUri/renewUpload" -HttpMethod POST
+    $fileObj = Invoke-GraphRequest -Url "$fileUri/renewUpload" -HttpMethod POST
 	
 	$file = Wait-IntuneFileState $fileUri "AzureStorageUriRenewal" $azureStorageRenewSasUriBackOffTimeInSeconds
 }

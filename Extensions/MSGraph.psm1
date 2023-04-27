@@ -575,7 +575,7 @@ function Get-GraphObjects
         }
     }     
     
-    $graphObjects = Invoke-GraphRequest -Uri $url @params
+    $graphObjects = Invoke-GraphRequest -Url $url @params
     if($SinglePage -eq $true -or $AllPages -eq $true)
     {
         $script:nextGraphPage = $graphObjects.'@odata.nextLink'
@@ -1162,7 +1162,7 @@ function Invoke-InitSilentBatchJob
         $accessToken = Get-JWTtoken $global:MSALToken.AccessToken
         if($accessToken)
         {
-            $global:Organization = (MSGraph\Invoke-GraphRequest -Uri "Organization" -SkipAuthentication -ODataMetadata "Skip" -NoError).Value 
+            $global:Organization = (MSGraph\Invoke-GraphRequest -Url "Organization" -SkipAuthentication -ODataMetadata "Skip" -NoError).Value 
             if($global:Organization)
             {
                 if($global:Organization -is [array]) { $global:Organization = $global:Organization[0]}
@@ -2314,7 +2314,7 @@ function Reset-GraphObject
                 $json = Update-JsonForEnvironment $json
             }
 
-            $objectUpdated = (Invoke-GraphRequest -Uri $strAPI -Content $json -HttpMethod $method @params)
+            $objectUpdated = (Invoke-GraphRequest -Url $strAPI -Content $json -HttpMethod $method @params)
 
             if($objectUpdated)
             {
@@ -3181,7 +3181,7 @@ function Set-GraphNavigationProperties
 
         if($FromOldObject -eq $true)
         {
-            $navProp = Invoke-GraphRequest -Uri $oldObj."$($prop.Name)@odata.navigationLink" -ODataMetadata "minimal" -NoError
+            $navProp = Invoke-GraphRequest -URL $oldObj."$($prop.Name)@odata.navigationLink" -ODataMetadata "minimal" -NoError
 
             if(-not $navProp) { continue }
 
@@ -3206,7 +3206,7 @@ function Set-GraphNavigationProperties
                 $refObjName = $oldObj."#CustomRef_$($prop.Name)"
             }        
             
-            $refObjects = Invoke-GraphRequest -Uri "$($objectType.API)?`$filter=$($nameProp) eq '$($refObjName)'" -NoError
+            $refObjects = Invoke-GraphRequest -URL "$($objectType.API)?`$filter=$($nameProp) eq '$($refObjName)'" -NoError
 
             $objectsFound = ($refObjects.value | measure).Count
 
@@ -3236,7 +3236,7 @@ function Set-GraphNavigationProperties
         Write-Log "Add $refObjName ($refObjId) to navigation property $($prop.Name)"
 
         $body = $refBodyObjs | ConvertTo-Json -Depth 50
-        Invoke-GraphRequest -Uri $associationLink -HttpMethod "PUT" -Content $body | Out-Null
+        Invoke-GraphRequest -URL $associationLink -HttpMethod "PUT" -Content $body | Out-Null
     }    
 }
 
@@ -3264,7 +3264,7 @@ function Add-GraphNavigationProperties
         if($prop.ContainsTarget -eq $true) { continue }
 
         if(-not ($obj."$($prop.Name)@odata.navigationLink")) { continue }
-        $navProp = Invoke-GraphRequest -Uri $obj."$($prop.Name)@odata.navigationLink" -ODataMetadata "minimal" -NoError
+        $navProp = Invoke-GraphRequest -URL $obj."$($prop.Name)@odata.navigationLink" -ODataMetadata "minimal" -NoError
         if($navProp)
         {
             $value = $null
@@ -3346,7 +3346,7 @@ function Get-GraphBatchObjects
                 $retry = $false
                 $retryArr = @()
                 $retryAfter = 0
-                $tmpResults = Invoke-GraphRequest -Uri "`$batch" -Content $json -HttpMethod "POST" -Batch #-Url $api -property $obj.ObjectType.ViewProperties -objectType $obj.ObjectType -
+                $tmpResults = Invoke-GraphRequest -Url "`$batch" -Content $json -HttpMethod "POST" -Batch #-Url $api -property $obj.ObjectType.ViewProperties -objectType $obj.ObjectType -
                 foreach($batchResult in ($tmpResults.responses | Sort -Property Id))
                 {
                     if($batchResult.Status -ne "200" -or -not $batchResult.body)
@@ -3502,7 +3502,7 @@ function Import-GraphObject
         $json = $json -replace "%OrganizationId%",$global:Organization.Id
     }    
 
-    $newObj = (Invoke-GraphRequest -Uri $strAPI -Content $json -HttpMethod $method @params)
+    $newObj = (Invoke-GraphRequest -Url $strAPI -Content $json -HttpMethod $method @params)
 
     if($newObj -is [Boolean] -and $newObj -and $method -eq "PATCH")
     {
@@ -3594,7 +3594,7 @@ function Remove-GraphObject
     Write-Status "Delete $((Get-GraphObjectName $objToRemove $objectType))"
     $strAPI = ($api + "/$($objToRemove.Id)")
     Write-Log "Delete $($objectType.Title) object $((Get-GraphObjectName $objToRemove $objectType))"
-    Invoke-GraphRequest -Uri $strAPI -HttpMethod "DELETE" -ODataMetadata "none"
+    Invoke-GraphRequest -Url $strAPI -HttpMethod "DELETE" -ODataMetadata "none"
 }
 
 function Copy-GraphObject
@@ -4268,7 +4268,7 @@ function Confirm-GraphMatchFilter
 
         if(-not $script:scopeTags -and $script:offlineDocumentation -ne $true)
         {
-            $script:scopeTags = (Invoke-GraphRequest -Uri "/deviceManagement/roleScopeTags").Value
+            $script:scopeTags = (Invoke-GraphRequest -Url "/deviceManagement/roleScopeTags").Value
         }
         
         $found = $false
