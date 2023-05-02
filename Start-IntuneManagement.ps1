@@ -1,3 +1,4 @@
+Function Start-Intune
 [CmdletBinding(SupportsShouldProcess=$True)]
 param(
     [switch]

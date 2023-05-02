@@ -343,7 +343,7 @@ Function PhinRule {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Adding Phin URLs to the allowlist" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        if (-not ($Phins)) {
+        if (-not ($GetPhins)) {
             New-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery -Allow -Entries $Phins -NoExpiration
         } else {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -372,7 +372,7 @@ Function PhinRule {
         $PhishRule = "PhishSimOverrideRule"
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
         $SimCheck = Get-PhishSimOverridePolicy -Identity $PhishPolicy
-        $RuleCheck = Get-PhishSimOverrideRule -Identity $PhishRule
+       # $RuleCheck = Get-PhishSimOverrideRule -Identity $PhishRule
         if (!$SimCheck) {
             try {
             New-PhishSimOverridePolicy -Name $PhishPolicy
@@ -381,19 +381,12 @@ Function PhinRule {
             } catch {
                 Write-Host "An error occurred while checking or creating the PhishSimOverridePolicy: $($_.Exception.Message)" -ForegroundColor DarkRed
             }
-
-        } elseif (-not ($RuleCheck)) {
-            try {
-            New-PhishSimOverrideRule -Name $PhishRule -Policy $PhishPolicy -Domains $PhinAllows -SenderIpRanges $SenderIPs
-        } catch {
-            Write-Host "An error occurred while checking or creating the PhishSimOverrideRule: $($_.Exception.Message)" -ForegroundColor DarkRed
-        }
         } else {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin phishing override policy has been created" -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         }
-    }
+}
 
     
     # Mailbox Auditing
