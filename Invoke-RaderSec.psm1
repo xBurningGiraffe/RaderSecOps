@@ -372,7 +372,7 @@ Function PhinRule {
         $PhishRule = "PhishSimOverrideRule"
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
         $SimCheck = Get-PhishSimOverridePolicy -Identity $PhishPolicy
-       # $RuleCheck = Get-PhishSimOverrideRule -Identity $PhishRule
+        $RuleChecks = Get-PhishSimOverrideRule.Domains
         if (!$SimCheck) {
             try {
             New-PhishSimOverridePolicy -Name $PhishPolicy
@@ -381,7 +381,7 @@ Function PhinRule {
             } catch {
                 Write-Host "An error occurred while checking or creating the PhishSimOverridePolicy: $($_.Exception.Message)" -ForegroundColor DarkRed
             }
-        } else {
+    } else  {           
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin phishing override policy has been created" -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
