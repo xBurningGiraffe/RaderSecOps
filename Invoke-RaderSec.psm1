@@ -372,7 +372,7 @@ Function PhinRule {
         $PhishRule = "PhishSimOverrideRule"
         $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
         $SimCheck = Get-PhishSimOverridePolicy -Identity $PhishPolicy
-        $RuleChecks = Get-PhishSimOverrideRule.Domains
+        # $RuleChecks = Get-PhishSimOverrideRule.Domains
         if (!$SimCheck) {
             try {
             New-PhishSimOverridePolicy -Name $PhishPolicy
