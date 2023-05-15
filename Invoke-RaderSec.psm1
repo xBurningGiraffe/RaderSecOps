@@ -167,7 +167,6 @@ Function Invoke-RaderSec {
     #                LicenseCheck
     #            }
                 'V'{
-                    Connect-AzAccount
                     VTSearch
                 }
                 'R'{
@@ -819,6 +818,12 @@ Function Rader_IPHunter {
     #}
 
     Function VTSearch {
+        $AzCheck = Get-AzContext
+
+        if ($null -eq $AzCheck) {
+            Write-Host "Connect to your Rader Solutions account"
+            Connect-AzAccount
+        } else {
         $SearchHash = Read-Host 'Enter the file hash to search '
         Get-VTHashSearch $SearchHash
     }
