@@ -7,7 +7,7 @@ Function Get-VTHashSearch
         param ([Parameter(Mandatory=$true)] [array]$h)
 
     ## Get your own VT API key here: https://www.virustotal.com/gui/join-us
-        $VTApiKey = Get-AzKeyVault -VaultName 'raderseckeys' -Name 'vt-api' -AsPlainText
+        $VTApiKey = Get-AzKeyVaultSecret -VaultName 'raderseckeys' -Name 'vt-api' -AsPlainText
 
     ## Set TLS 1.2
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

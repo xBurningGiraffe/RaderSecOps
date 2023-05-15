@@ -69,7 +69,7 @@ Function Invoke-RaderSec {
     Function OnboardOption {
         Do {
             OnboardMenu
-            $script:OnboardType = Read-Host -Prompt "Choose a task from the menu and enter here: "
+            $script:OnboardType = Read-Host -Prompt "Choose a task from the menu and enter here "
             switch ($script:OnboardType){
                 '0'{
                     ModuleInstalls
