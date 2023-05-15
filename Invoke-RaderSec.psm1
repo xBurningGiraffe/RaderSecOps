@@ -52,6 +52,7 @@ Function Invoke-RaderSec {
         Write-Host "    [M] Enable MFA Conditional Access Policy" -ForegroundColor Cyan
         Write-Host " "
         Write-Host "------------- Other --------------" -ForegroundColor DarkGreen
+        Write-Host "    [V] VirusTotal Hash Search" -ForegroundColor Magenta
         Write-Host "    [R] O365 Onboarding Recon Report" -ForegroundColor Magenta
         Write-Host "    [P] PwnedUser Log Collection (BEC)" -ForegroundColor Magenta
         Write-Host "    [B] Add Cofense Protect 'Report Phishing' Button" -ForegroundColor Magenta
@@ -165,6 +166,10 @@ Function Invoke-RaderSec {
     #               Connect-PartnerCenter
     #                LicenseCheck
     #            }
+                'V'{
+                    Connect-AzAccount
+                    VTSearch
+                }
                 'R'{
                     Connect-AzureAD
                     Connect-ExchangeOnline
@@ -227,7 +232,7 @@ Function Invoke-RaderSec {
     
     # PowerShell Module Installs
     Function ModuleInstalls {
-        $Modules = @("ExchangeOnlineManagement","AzureAD","AIPService","MSOnline","PartnerCenter","OrganizationAddInService","AzureADPreview")
+        $Modules = @("ExchangeOnlineManagement","AzureAD","AIPService","MSOnline","PartnerCenter","OrganizationAddInService","AzureADPreview","Az.KeyVault")
         foreach ($Module in $Modules){
             if ( ! ( Get-Module -Name "$Module" ) ) {
                 Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -812,6 +817,11 @@ Function Rader_IPHunter {
      #   }
     #
     #}
+
+    Function VTSearch {
+        $SearchHash = Read-Host 'Enter the file hash to search '
+        Get-VTHashSearch $SearchHash
+    }
     
 Function UpdateRaderSec{
     $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
