@@ -827,6 +827,7 @@ Function Rader_IPHunter {
         $SearchHash = Read-Host 'Enter the file hash to search '
         Get-VTHashSearch $SearchHash
     }
+}
     
 Function UpdateRaderSec{
     $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
@@ -861,6 +862,7 @@ Function UpdateRaderSec{
     }
     Write-Host "RaderSecOps has been updated. Restart RaderSecOps in a new tab or Powershell window." -ForegroundColor DarkGreen
 }
+
 
 
     Function Intune {
