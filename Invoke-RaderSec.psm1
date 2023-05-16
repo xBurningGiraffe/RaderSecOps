@@ -1,5 +1,8 @@
 ﻿# RaderSecOps Script
 Function Invoke-RaderSec {
+    $LogDate = (Get-Date | select-object day,month,year)
+    $LogName = "RaderSecLog_$($LogDate.day)_$($LogDate.month)_$($LogDate.year)"
+    Start-Transcript -Path "$env:USERPROFILE\RaderSecLogs-($LogDate).log"
     Function WelcomeBanner {
         Start-Sleep -m 200
         Write-Host " NOTE: Run this with elevated privileges" -ForegroundColor DarkRed
@@ -70,11 +73,11 @@ Function Invoke-RaderSec {
         Do {
             OnboardMenu
             $script:OnboardType = Read-Host -Prompt "Choose a task from the menu and enter here "
-            switch ($script:OnboardType){
-                '0'{
+            switch ($script:OnboardType) {
+                '0' {
                     ModuleInstalls
                 }
-                '1'{
+                '1' {
                     Connect-ExchangeOnline 
                     Connect-AzureAD 
                     Connect-MsolService 
@@ -82,13 +85,13 @@ Function Invoke-RaderSec {
                     Connect-IPPSSession
                     FullOnboard
                 }
-                '2'{
+                '2' {
                     Connect-ExchangeOnline
                     OrgCustomization
                     OrgCustomizationCheck
                     
                 }
-                '3'{
+                '3' {
                     Connect-ExchangeOnline
                     OrgAuditing
                     
@@ -98,107 +101,107 @@ Function Invoke-RaderSec {
                     Connect-ExchangeOnline
                     LitHold
                 }#>
-                '5'{
+                '5' {
                     Connect-ExchangeOnline
                     Connect-MsolService
                     MboxAudit
                 }
-                '6'{
+                '6' {
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365OutboundSpam
                 }
-                '7'{
+                '7' {
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiSpam
                 }
-                '8'{
+                '8' {
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiPhish
                 }
-                '9'{
+                '9' {
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365AntiMal
                     
                 }
-                '10'{
+                '10' {
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365SafeAttach
                 }
-                '11'{
+                '11' {
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365SafeLinks
                     
                 }
-                '12'{
+                '12' {
                     Connect-ExchangeOnline
                     Connect-AzureAD
                     MFAPolicy
                     
                     
                 }
-                '13'{
+                '13' {
                     Connect-ExchangeOnline
                     Connect-AipService
                     AIPPolicy
                 }
-                '14'{
-                    Connect-ExchangeOnline
+                '14' {
                     Connect-IPPSSession
+                    Connect-ExchangeOnline
                     PhinRule
                     PhinAllows
                     PhinSim
                     Disconnect-ExchangeOnline
                     
                 }
-                '15'{
+                '15' {
                     Connect-AzureAD
                     NAOnlyPolicy
                     Disconnect-AzureAD
                 }
-    #            'L'{
-    #                Connect-ExchangeOnline
-    #               Connect-PartnerCenter
-    #                LicenseCheck
-    #            }
-                'V'{
+                #            'L'{
+                #                Connect-ExchangeOnline
+                #               Connect-PartnerCenter
+                #                LicenseCheck
+                #            }
+                'V' {
                     VTSearch
                 }
-                'R'{
+                'R' {
                     Connect-AzureAD
                     Connect-ExchangeOnline
                     Connect-MsolService 
                     Invoke-Rader_Recon
                 }
-                'P'{
+                'P' {
                     PwnPost
                     Disconnect-AzAccount -Confirm:$False -ErrorAction SilentlyContinue
                 }
-                'D'{
+                'D' {
                     Connect-AzAccount
                     Connect-ExchangeOnline
                     Connect-AzureAD
                     DMARCDKIM
                 }
-                'B'{
+                'B' {
                     Connect-ExchangeOnline
                     PhishButton
                 }
-                'M'{
+                'M' {
                     Connect-AzureAD
                     EnableMFA
                 }
-                'L'{
+                'L' {
                     Connect-MsolService
                     Connect-ExchangeOnline
                     DisableLit
                 }
-                'T'{
+                'T' {
                     Connect-ExchangeOnline
                     Connect-IPPSSession
                     O365OutboundSpam
@@ -208,20 +211,20 @@ Function Invoke-RaderSec {
                     O365SafeAttach
                     O365SafeLinks
                 }
-                'O'{
+                'O' {
                     Connect-ExchangeOnline
                     Over50GB
                 }
-                'I'{
+                'I' {
                     Rader_IPHunter
                 }
-                'IN'{
+                'IN' {
                     Start-IntuneManagement
                 }
-                'U'{
+                'U' {
                     UpdateRaderSec
                 }
-                'Q'{
+                'Q' {
                     Goodbye
                 }
             }
@@ -231,19 +234,20 @@ Function Invoke-RaderSec {
     
     # PowerShell Module Installs
     Function ModuleInstalls {
-        $Modules = @("ExchangeOnlineManagement","AzureAD","AIPService","MSOnline","PartnerCenter","OrganizationAddInService","AzureADPreview","Az.KeyVault")
-        foreach ($Module in $Modules){
+        $Modules = @("ExchangeOnlineManagement", "AzureAD", "AIPService", "MSOnline", "PartnerCenter", "OrganizationAddInService", "AzureADPreview", "Az.KeyVault")
+        foreach ($Module in $Modules) {
             if ( ! ( Get-Module -Name "$Module" ) ) {
                 Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
                 Write-Host "Importing required Powershell modules..." -ForegroundColor DarkYellow
                 Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-                    Import-Module -Name $Module
-                } else {
-                    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-                    Write-Host "Installing required Powershell modules.." -ForegroundColor DarkYellow
-                    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-                    Install-Module -Name $Module -Force
-                }
+                Import-Module -Name $Module
+            }
+            else {
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+                Write-Host "Installing required Powershell modules.." -ForegroundColor DarkYellow
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+                Install-Module -Name $Module -Force
+            }
         }
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Required Powershell modules have been installed" -ForegroundColor DarkYellow
@@ -256,7 +260,6 @@ Function Invoke-RaderSec {
     Function FullOnboard {
         OrgCustomization
         OrgAuditing
-        # LitHold - // not sure if this will continue by default
         PhinRule
         PhinAllows
         PhinSim
@@ -275,81 +278,69 @@ Function Invoke-RaderSec {
     
     # Enable Organization Customization
     Function OrgCustomization {
-    $GetOrgCust = (Get-OrganizationConfig).IsDehydrated
-    if ($GetOrgCust -ne $True) {
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Enabling Organization Customization..." -ForegroundColor DarkYellow
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Enable-OrganizationCustomization
-    } else {
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Organization Customization is now enabled" -ForegroundColor DarkGreen
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        $GetOrgCust = (Get-OrganizationConfig).IsDehydrated
+        try {
+        if ($GetOrgCust -ne $True) {
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host "Enabling Organization Customization..." -ForegroundColor DarkYellow
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Enable-OrganizationCustomization
         }
+        else {
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host "Organization Customization is now enabled" -ForegroundColor DarkGreen
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        } 
+    } catch {
+        Write-Host "An error occurred: $($_.Exception.Message)"
     }
+}
     
     # Enable Org-Wide Auditing
     Function OrgAuditing {
-    $CheckAuditing = Get-AdminAuditLogConfig
-    $EnableAuditing = Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Write-Host "Enabling Organization-Wide Auditing" -ForegroundColor DarkYellow 
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    if (!$CheckAuditing.AdminAuditLogEnabled) {
-        $EnableAuditing
-    }
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Write-Host "Organization-wide auditing is now enabled" -ForegroundColor DarkGreen
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
-    
-    # Enable Litigation Hold for licensed users
-   <# Function LitHold {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Enabling litigation hold for all licensed users..." -ForegroundColor DarkYellow
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        $GetUsers = (Get-Mailbox -ResultSize Unlimited -Filter {RecipientTypeDetails -eq "UserMailbox"})
-        $Licenses = (Get-MsolUser | Where-Object {$_.IsLicensed -eq $true}).UserPrincipalName
-        $LicensedUsers = ($GetUsers.UserPrincipalName | Where-Object -FilterScript { $_ -in $Licenses})
-        foreach ($LicensedUser in $LicensedUsers){
-            Set-Mailbox -Identity $LicensedUser -LitigationHoldEnabled $True
+        Write-Host "Enabling Organization-Wide Auditing" -ForegroundColor DarkYellow 
+        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor
+        $CheckAuditing = Get-AdminAuditLogConfig
+        $EnableAuditing = Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true
+        if (!$CheckAuditing.AdminAuditLogEnabled) {
+            $EnableAuditing
         }
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Litigation hold is now enabled" -ForegroundColor DarkGreen
+        Write-Host "Organization-wide auditing is now enabled" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }#> 
+    }
     
-Function PhinRule {
+    Function PhinRule {
         $PhinRule = "Bypass Focused Inbox for Phin"
         $SenderIPs = "198.2.177.227"
-        $BypassSpam = Get-TransportRule | Where-Object {$_.Name -eq $PhinRule}
+        $BypassSpam = Get-TransportRule | Where-Object { $_.Name -eq $PhinRule }
         if (!$BypassSpam) {
-            New-TransportRule -Name $PhinRule -Priority 0 -SenderIpRanges $SenderIPs -SetAuditSeverity DoNotAudit -SetSCL -1 -SetHeaderName "X-MS-Exchange-Organization-BypassFocusedInbox" -SetHeaderValue "True" -StopRuleProcessing $True
-            Start-Sleep -Seconds 15
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Creating Phin bypass spam filter..." -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    } else {
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Phin bypass spam filter rule already exists" -ForegroundColor DarkYellow
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Phin bypass spam filter rule has been created" -ForegroundColor DarkYellow
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-} 
+            New-TransportRule -Name $PhinRule -Priority 0 -SenderIpRanges $SenderIPs -SetAuditSeverity DoNotAudit -SetSCL -1 -SetHeaderName "X-MS-Exchange-Organization-BypassFocusedInbox" -SetHeaderValue "True" -StopRuleProcessing $True
+            Start-Sleep -Seconds 15
+        }
+        else {
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host "Phin bypass spam filter rule already exists" -ForegroundColor DarkYellow
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        }
+    } 
     
     Function PhinAllows {
-        $Phins = @("*.betterphish.com/*","*.shippingalerts.com/*","*.amazingdealz.net/*","*.berrysupply.net/*","*.coronacouncil.org/*","*.couponstash.net/*","*.creditsafetyteam.com/*","*.authenticate.com/*","*.notificationhandler.com/*")
+        $Phins = @("*.betterphish.com/*", "*.shippingalerts.com/*", "*.amazingdealz.net/*", "*.berrysupply.net/*", "*.coronacouncil.org/*", "*.couponstash.net/*", "*.creditsafetyteam.com/*", "*.authenticate.com/*", "*.notificationhandler.com/*")
         $GetPhins = foreach ($Phin in $Phins) {
-            Get-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery | Where-Object {$_.Value -eq $Phin}
+            Get-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery | Where-Object { $_.Value -eq $Phin }
         }
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Adding Phin URLs to the allowlist" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         if (-not ($GetPhins)) {
             New-TenantAllowBlockListItems -ListType Url -ListSubType AdvancedDelivery -Allow -Entries $Phins -NoExpiration
-        } else {
+        }
+        else {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin allowed URLs have been added" -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -371,26 +362,28 @@ Function PhinRule {
             "autheticate.com",
             "notificationhandler.com",
             "phinsecurity.com"
-            )
+        )
         $PhishPolicy = "PhishSimOverridePolicy"
         $PhishRule = "PhishSimOverrideRule"
-        $SenderIPs = "54.84.153.58","107.21.104.73","198.2.177.227"
+        $SenderIPs = "198.2.177.227"
         $SimCheck = Get-PhishSimOverridePolicy -Identity $PhishPolicy
         # $RuleChecks = Get-PhishSimOverrideRule.Domains
         if (!$SimCheck) {
             try {
-            New-PhishSimOverridePolicy -Name $PhishPolicy
-            Start-Sleep -Seconds 15
-            New-PhishSimOverrideRule -Name $PhishRule -Policy $PhishPolicy -Domains $PhinAllows -SenderIpRanges $SenderIPs
-            } catch {
+                New-PhishSimOverridePolicy -Name $PhishPolicy
+                Start-Sleep -Seconds 15
+                New-PhishSimOverrideRule -Name $PhishRule -Policy $PhishPolicy -Domains $PhinAllows -SenderIpRanges $SenderIPs
+            }
+            catch {
                 Write-Host "An error occurred while checking or creating the PhishSimOverridePolicy: $($_.Exception.Message)" -ForegroundColor DarkRed
             }
-    } else  {           
+        }
+        else {           
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Phin phishing override policy has been created" -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         }
-}
+    }
 
     
     # Mailbox Auditing
@@ -398,10 +391,10 @@ Function PhinRule {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Enabling mailbox auditing for all licensed users..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        $GetUsers = (Get-Mailbox -ResultSize Unlimited -Filter {RecipientTypeDetails -eq "UserMailbox"})
-        $Licenses = (Get-MsolUser | Where-Object {$_.IsLicensed -eq $true}).UserPrincipalName
-        $LicensedUsers = ($GetUsers.UserPrincipalName | Where-Object -FilterScript { $_ -in $Licenses})
-        foreach ($LicensedUser in $LicensedUsers){
+        $GetUsers = (Get-Mailbox -ResultSize Unlimited -Filter { RecipientTypeDetails -eq "UserMailbox" })
+        $Licenses = (Get-MsolUser | Where-Object { $_.IsLicensed -eq $true }).UserPrincipalName
+        $LicensedUsers = ($GetUsers.UserPrincipalName | Where-Object -FilterScript { $_ -in $Licenses })
+        foreach ($LicensedUser in $LicensedUsers) {
             Write-Host "Auditing enabled for " $LicensedUser
             Set-Mailbox -Identity $LicensedUser -AuditEnabled $true
         }
@@ -414,21 +407,23 @@ Function PhinRule {
     
     # OrganizationCustomization Check 2
     Function OrgCustomizationCheck {
-    if ($GetOrgCust -eq $False) {
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Making sure Organization Customization is enabled..." -ForegroundColor DarkGreen
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Enable-OrganizationCustomization
-    } elseif ($GetOrgCustom -eq $True) {
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Organization Customization is now enabled" -ForegroundColor DarkGreen
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    } else {
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Enabling Organization Customization can take quite a while to propagate." -Foreground DarkMagenta
-        Write-Host "If you receive an error about organization customization in the next section, re-run this script in 24 hours" -Foreground DarkMagenta
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
+        if ($GetOrgCust -eq $False) {
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host "Making sure Organization Customization is enabled..." -ForegroundColor DarkGreen
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Enable-OrganizationCustomization
+        }
+        elseif ($GetOrgCustom -eq $True) {
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host "Organization Customization is now enabled" -ForegroundColor DarkGreen
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        }
+        else {
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host "Enabling Organization Customization can take quite a while to propagate." -Foreground DarkMagenta
+            Write-Host "If you receive an error about organization customization in the next section, re-run this script in 24 hours" -Foreground DarkMagenta
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        }
     }
     
     # Function for Outbound Spam Policy
@@ -453,7 +448,7 @@ Function PhinRule {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         $Junk = "MoveToJmf"
         $Policy = (Get-HostedContentFilterPolicy).Name
-        Set-HostedContentFilterPolicy $Policy -BulkThreshold 7 -HighConfidenceSpamAction $Junk -HighConfidencePhishAction Quarantine -PhishSpamAction $Junk -PhishZapEnable $true -QuarantineRetentionPeriod 30 -EnableRegionBlockList $true -RegionBlockList @{Add="CN","RU","IR","KP","TR","TW","BR","RO","CZ","JP"} -SpamAction $Junk -SpamZapEnabled $true -InlineSafetyTipsEnabled $true
+        Set-HostedContentFilterPolicy $Policy -BulkThreshold 7 -HighConfidenceSpamAction $Junk -HighConfidencePhishAction Quarantine -PhishSpamAction $Junk -PhishZapEnable $true -QuarantineRetentionPeriod 30 -EnableRegionBlockList $true -RegionBlockList @{Add = "CN", "RU", "IR", "KP", "TR", "TW", "BR", "RO", "CZ", "JP" } -SpamAction $Junk -SpamZapEnabled $true -InlineSafetyTipsEnabled $true
     
         Write-Host "Office365 Anti-spam Policy configuration complete" -ForegroundColor DarkGreen
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -484,9 +479,9 @@ Function PhinRule {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         $AntiMal = "Default"
         Set-MalwareFilterPolicy $AntiMal -EnableFileFilter $true -FileTypeAction "Quarantine" -ZapEnabled $true
-    # Error checking and printing relevant results?
-    # Write-Host -ForegroundColor DarkGreen $Color "Anti-Malware complete. Results: "
-    # $GetAM | Format-List
+        # Error checking and printing relevant results?
+        # Write-Host -ForegroundColor DarkGreen $Color "Anti-Malware complete. Results: "
+        # $GetAM | Format-List
     
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Office365 Anti-Malware Policy configuration complete" -ForegroundColor DarkGreen
@@ -532,7 +527,7 @@ Function PhinRule {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Creating MFA Conditional Access Policy..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        $ExcludedUsers = Get-User | Where-Object {($_.UserPrincipalName -like "rs@*" -or $_.UserPrincipalName -like "scanner@*" -or $_.UserPrincipalName -like "admin@*" -or $_.UserPrincipalName -like "rsadmin@*")}
+        $ExcludedUsers = Get-User | Where-Object { ($_.UserPrincipalName -like "rs@*" -or $_.UserPrincipalName -like "scanner@*" -or $_.UserPrincipalName -like "admin@*" -or $_.UserPrincipalName -like "rsadmin@*") }
         $conditions = New-Object -TypeName Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet
         $conditions.Applications = New-Object -TypeName Microsoft.Open.MSGraph.Model.ConditionalAccessApplicationCondition
         $conditions.Applications.IncludeApplications = "All"
@@ -544,16 +539,17 @@ Function PhinRule {
         $controls._Operator = "OR"
         $controls.BuiltInControls = @('MFA')
         $GetMFAPolicy = Get-AzureADMSConditionalAccessPolicy
-        if ($GetMFAPolicy.DisplayName -notcontains "Require MFA"){
+        if ($GetMFAPolicy.DisplayName -notcontains "Require MFA") {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Creating MFA Conditional Access Policy..." -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             New-AzureADMSConditionalAccessPolicy -DisplayName "Require MFA" -State "enabledForReportingButNotEnforced" -Conditions $conditions -GrantControls $controls
-    }   else {
+        }
+        else {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "MFA Conditional Access Policy has been created." -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
+        }
     }
 
     
@@ -563,7 +559,7 @@ Function PhinRule {
         Write-Host "Creating N.America Logins Only Conditional Access Policy..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         # Creates NamedLocations Group
-        $NALocations = "CA","US","MX"
+        $NALocations = "CA", "US", "MX"
         $NAPolicy = New-AzureADMSNamedLocationPolicy -OdataType "#microsoft.graph.countryNamedLocation" -DisplayName "North America" -CountriesAndRegions $NALocations -IncludeUnknownCountriesAndRegions $false
         $NAPolicy
         #Creates CA Policy
@@ -604,31 +600,33 @@ Function PhinRule {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "Creating AIP email encryption rule..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        $CheckRMS = (Get-RMSTemplate).Name | Where-Object -FilterScript {$_ -eq "Encrypt"}
+        $CheckRMS = (Get-RMSTemplate).Name | Where-Object -FilterScript { $_ -eq "Encrypt" }
         $CheckRule = (Get-TransportRule).Name
-        $Keywords = "securemail","encryptmail"
-        if ($CheckRMS -ne "Encrypt"){
-        do {
-            $AzureRMS
-            $RMSEnable
-            $RMS
-            $License
-            Set-IRMConfiguration -LicensingLocation $License
-            Set-IRMConfiguration -InternalLicensingEnabled $true
-            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkRed
-            Write-Host "RMS Encryption Template not available yet. Verify that M365 Business Premium Licensing has been applied to the tenant."
-            Write-Host ""
-            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkRed
-            Start-Sleep -Seconds 60
-        }until ($CheckRMS -eq "Encrypt")
-        } elseif ($CheckRule -contains "Use Office365 Encryption") {
-        Write-Host "'Use Office365 Encryption' rule already exists...check the mail flow rules in Exchange"
-        }else {
-        New-TransportRule -Name "Use Office365 Encryption" -ApplyRightsProtectionTemplate "Encrypt" -SentToScope NotInOrganization -SubjectOrBodyContainsWords  $Keywords -ExceptIfRecipientDomainIs "radersolutions.com" -Mode Enforce -Enabled $true
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Email encryption rule has been created. AIP configuration is complete"
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    }
+        $Keywords = "securemail", "encryptmail"
+        if ($CheckRMS -ne "Encrypt") {
+            do {
+                $AzureRMS
+                $RMSEnable
+                $RMS
+                $License
+                Set-IRMConfiguration -LicensingLocation $License
+                Set-IRMConfiguration -InternalLicensingEnabled $true
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkRed
+                Write-Host "RMS Encryption Template not available yet. Verify that M365 Business Premium Licensing has been applied to the tenant."
+                Write-Host ""
+                Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkRed
+                Start-Sleep -Seconds 60
+            }until ($CheckRMS -eq "Encrypt")
+        }
+        elseif ($CheckRule -contains "Use Office365 Encryption") {
+            Write-Host "'Use Office365 Encryption' rule already exists...check the mail flow rules in Exchange"
+        }
+        else {
+            New-TransportRule -Name "Use Office365 Encryption" -ApplyRightsProtectionTemplate "Encrypt" -SentToScope NotInOrganization -SubjectOrBodyContainsWords  $Keywords -ExceptIfRecipientDomainIs "radersolutions.com" -Mode Enforce -Enabled $true
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host "Email encryption rule has been created. AIP configuration is complete"
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        }
     }
 
     # Function LicenseCheck {
@@ -652,65 +650,66 @@ Function PhinRule {
     #        }
     # }
 
-Function PwnPost {
-# Install Hawk module if not installed
-    $HawkCheck = Test-Path -Path "$($env:ProgramFiles)\WindowsPowershell\Modules\Hawk"
-    if (! $($HawkCheck)) {
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host "Installing HAWK module..." -ForegroundColor DarkYellow
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Set-ExecutionPolicy RemoteSigned -Confirm:$false
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/T0pCyber/hawk/master/install.ps1 -OutFile .\hawkinstall.ps1
-        Unblock-File -Path .\hawkinstall.ps1
-        .\hawkinstall.ps1
-}
-
-# Post alert to compromises channel
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Write-Host "First, connect to your Rader Solutions account: "
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Connect-AzAccount
-    Start-Sleep -s 15
-    $Pwned = Read-Host  'Enter the compromised user email address'
-    try {
-        $PwnData = @{
-            Company = Read-Host 'Enter the company name '
-            User = $Pwned
-            Ticket = Read-Host 'Enter the ticket number '
-            IOC = Read-Host 'Enter the IOC '
+    Function PwnPost {
+        # Install Hawk module if not installed
+        $HawkCheck = Test-Path -Path "$($env:ProgramFiles)\WindowsPowershell\Modules\Hawk"
+        if (! $($HawkCheck)) {
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host "Installing HAWK module..." -ForegroundColor DarkYellow
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Set-ExecutionPolicy RemoteSigned -Confirm:$false
+            Invoke-WebRequest -Uri https://raw.githubusercontent.com/T0pCyber/hawk/master/install.ps1 -OutFile .\hawkinstall.ps1
+            Unblock-File -Path .\hawkinstall.ps1
+            .\hawkinstall.ps1
         }
-        $PwnMessage = @{
-            "text" = "Alert: Security Incident"
+
+        # Post alert to compromises channel
+        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        Write-Host "First, connect to your Rader Solutions account: "
+        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        Connect-AzAccount
+        Start-Sleep -s 15
+        $Pwned = Read-Host  'Enter the compromised user email address'
+        try {
+            $PwnData = @{
+                Company = Read-Host 'Enter the company name '
+                User    = $Pwned
+                Ticket  = Read-Host 'Enter the ticket number '
+                IOC     = Read-Host 'Enter the IOC '
+            }
+            $PwnMessage = @{
+                "text"     = "Alert: Security Incident"
                 "sections" = @(
                     @{
                         "facts" = $PwnData.GetEnumerator() | ForEach-Object {
                             @{
-                                "name" = $_.Key
+                                "name"  = $_.Key
                                 "value" = $_.Value
                             }
                         }
                     }
-               )
-        }
-        $message = $PwnMessage | ConvertTo-Json -Depth 99
+                )
+            }
+            $message = $PwnMessage | ConvertTo-Json -Depth 99
 
-        $PwnHook = Get-AzKeyVaultSecret -VaultName 'raderseckeys' -Name 'pwn-webhook' -AsPlainText
+            $PwnHook = Get-AzKeyVaultSecret -VaultName 'raderseckeys' -Name 'pwn-webhook' -AsPlainText
         
-        Invoke-RestMethod -Uri $PwnHook -Method Post -Body $message -ContentType "Application/Json"
-     } catch { 
+            Invoke-RestMethod -Uri $PwnHook -Method Post -Body $message -ContentType "Application/Json"
+        }
+        catch { 
             Write-Error "Error posting message in Compromises Team channel: $($_.Exception.Message)" -ForegroundColor DarkRed 
         }
 
 
-Start-HawkUserInvestigation -UserPrincipalName $Pwned
-}
+        Start-HawkUserInvestigation -UserPrincipalName $Pwned
+    }
 
-Function DMARCDKIM {
+    Function DMARCDKIM {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host  "Setting up DKIM..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         $DNSDomain = Read-Host "Enter domain name:"
-        $ResGrp = (Get-AzDnsZone | Where-Object{$_.Name -match $DNSDomain})
+        $ResGrp = (Get-AzDnsZone | Where-Object { $_.Name -match $DNSDomain })
         $GrpName = $ResGrp.ResourceGroupName
         $Zone = $ResGrp.Name
         $Selector = Get-DkimSigningConfig $DNSDomain
@@ -743,38 +742,41 @@ Function DMARCDKIM {
     
     
     # Add Cofense Protect 'Report Phishing' button as organization add-in
-Function PhishButton {
-    $Manifest = Read-Host "Download the Cofense Protect file and enter the file path here: (ex. c:\users\user\Downloads\manifest_BJLbbVDGL.xml) "
-    $AddButton = New-OrganizationAddIn -ManifestPath $Manifest -Locale 'en-US' -AssignToEveryone -UserDefault Mandatory
-    if ($AddButton) {
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Write-Host  "Adding the Cofense Protect 'Report Phishing' button..."
-    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-    Connect-OrganizationAddInService
-    $AddButton
-    } else {
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Host  "Cofense Protect 'Report Phishing' was added successfully." -ForegroundColor DarkGreen
-        Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+    Function PhishButton {
+        $Manifest = Read-Host "Download the Cofense Protect file and enter the file path here: (ex. c:\users\user\Downloads\manifest_BJLbbVDGL.xml) "
+        $AddButton = New-OrganizationAddIn -ManifestPath $Manifest -Locale 'en-US' -AssignToEveryone -UserDefault Mandatory
+        if ($AddButton) {
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host  "Adding the Cofense Protect 'Report Phishing' button..."
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Connect-OrganizationAddInService
+            $AddButton
+        }
+        else {
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+            Write-Host  "Cofense Protect 'Report Phishing' was added successfully." -ForegroundColor DarkGreen
+            Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+        }
     }
-}
     
     # Enable Conditional Access policy - Make sure users are appropriately added
-    Function EnableMFA{
+    Function EnableMFA {
         $GetMFAPolicy = Get-AzureADMSConditionalAccessPolicy -DisplayName "Require MFA"
         Write-Host "NOTE: All user configuration in this policy should be done BEFORE RUNNING THIS" -ForegroundColor DarkRed
         Write-Host "                                                           ___________________" -ForegroundColor DarkRed
-        if ($GetMFAPolicy.DisplayName -notcontains "Require MFA"){
+        if ($GetMFAPolicy.DisplayName -notcontains "Require MFA") {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "MFA conditional access Policy has not been created. The current conditional access policies are: " -ForegroundColor DarkYellow
             $GetMFAPolicy.DisplayName
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        } elseif (($GetMFAPolicy -contains "Require MFA") -and ($GetMFAPolicy.State -ne "Enabled")) {
+        }
+        elseif (($GetMFAPolicy -contains "Require MFA") -and ($GetMFAPolicy.State -ne "Enabled")) {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "Enabling MFA conditional access policy..." -ForegroundColor DarkYellow
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Set-AzureADMSConditionalAccessPolicy -DisplayName "Require MFA" -State "enabled"
-        } else {
+        }
+        else {
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
             Write-Host "MFA conditional access policy is now enabled." -ForegroundColor DarkGreen
             Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -790,19 +792,20 @@ Function PhishButton {
         $Mailboxes = Get-EXOMailbox
         foreach ($Mailbox in $Mailboxes) { 
             try {
-            Get-EXOMailboxStatistics -Identity $Mailbox | Where-Object {[int64]($PSItem.TotalItemSize.Value -replace '.+\(|bytes\)') -gt "50GB"}
-        } catch {
-            Write-Host "There was an issue with " $Mailbox
-    }
-    }
+                Get-EXOMailboxStatistics -Identity $Mailbox | Where-Object { [int64]($PSItem.TotalItemSize.Value -replace '.+\(|bytes\)') -gt "50GB" }
+            }
+            catch {
+                Write-Host "There was an issue with " $Mailbox
+            }
+        }
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Write-Host "50 GB mailbox pull is complete" -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-}
+    }
 
-Function Rader_IPHunter {
-    Invoke-RaderIP_Hunter
-}
+    Function Rader_IPHunter {
+        Invoke-RaderIP_Hunter
+    }
 
     #Function CAUserExclusion {
     #    Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -813,7 +816,7 @@ Function Rader_IPHunter {
     #        $ExID = Get-User -Identity $UserExclusion
     #       $conditions.Users.ExcludeUsers = $ExID.ExternalDirectoryObjectId
     #        Set-AzureADMSConditionalAccessPolicy -PolicyId $GetPolicy.Id -Conditions $conditions
-     #   }
+    #   }
     #
     #}
 
@@ -823,45 +826,46 @@ Function Rader_IPHunter {
         if ($null -eq $AzCheck) {
             Write-Host "Connect to your Rader Solutions account"
             Connect-AzAccount
-        } else {
-        $SearchHash = Read-Host 'Enter the file hash to search '
-        Get-VTHashSearch $SearchHash
-    }
-}
-    
-Function UpdateRaderSec{
-    $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
-    $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
-    $DownloadPath = "$FolderPath\RaderSecOps.zip"
-    $ExtractPath = "$FolderPath\RaderSecOps"
-
-    # Check if the RaderSecOps folder exists and remove it if it does
-    if (Test-Path "$FolderPath\RaderSecOps") {
-        Remove-Item "$FolderPath\RaderSecOps" -Recurse -Force
+        }
+        else {
+            $SearchHash = Read-Host 'Enter the file hash to search '
+            Get-VTHashSearch $SearchHash
+        }
     }
     
-    # Download the RaderSecOps module from the URL
-    Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
+    Function UpdateRaderSec {
+        $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
+        $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
+        $DownloadPath = "$FolderPath\RaderSecOps.zip"
+        $ExtractPath = "$FolderPath\RaderSecOps"
 
-    # Extract the contents of the .zip file to a temporary folder
-    $TempPath = "$FolderPath\RaderSecOps-main"
-    Expand-Archive -Path $DownloadPath -DestinationPath $TempPath
+        # Check if the RaderSecOps folder exists and remove it if it does
+        if (Test-Path "$FolderPath\RaderSecOps") {
+            Remove-Item "$FolderPath\RaderSecOps" -Recurse -Force
+        }
+    
+        # Download the RaderSecOps module from the URL
+        Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
 
-# If the extracted folder is named "RaderSecOps-main", move its contents to $ExtractPath
-    if (Test-Path "$TempPath\RaderSecOps-main") {
-        Move-Item "$TempPath\RaderSecOps-main\*" -Destination $ExtractPath
+        # Extract the contents of the .zip file to a temporary folder
+        $TempPath = "$FolderPath\RaderSecOps-main"
+        Expand-Archive -Path $DownloadPath -DestinationPath $TempPath
+
+        # If the extracted folder is named "RaderSecOps-main", move its contents to $ExtractPath
+        if (Test-Path "$TempPath\RaderSecOps-main") {
+            Move-Item "$TempPath\RaderSecOps-main\*" -Destination $ExtractPath
+        }
+
+        # Remove the temporary folder
+        Remove-Item $TempPath -Recurse -Force
+
+        $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+        if (!(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name RaderSecOps') -or !(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"')) {
+            Write-Output 'Import-Module -Name RaderSecOps' >> $ProfilePath
+            Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $ProfilePath
+        }
+        Write-Host "RaderSecOps has been updated. Restart RaderSecOps in a new tab or Powershell window." -ForegroundColor DarkGreen
     }
-
-# Remove the temporary folder
-    Remove-Item $TempPath -Recurse -Force
-
-    $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
-      if (!(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name RaderSecOps') -or !(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"')) {
-    Write-Output 'Import-Module -Name RaderSecOps' >> $ProfilePath
-    Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $ProfilePath
-    }
-    Write-Host "RaderSecOps has been updated. Restart RaderSecOps in a new tab or Powershell window." -ForegroundColor DarkGreen
-}
 
 
 
@@ -874,8 +878,8 @@ Function UpdateRaderSec{
     Function NullVariables {
         $ClearVars = "Domains"
         foreach ($ClearVar in $ClearVars) {
-        Clear-Variable -Name $ClearVar -Scope script
-    }
+            Clear-Variable -Name $ClearVar -Scope script
+        }
     }
 
 
@@ -887,7 +891,8 @@ Function UpdateRaderSec{
 
         try {
             Get-ExoMailbox -ResultSize 1
-        } catch [Microsoft.Exchange.Management.RestApiClient.RestClientException] {
+        }
+        catch [Microsoft.Exchange.Management.RestApiClient.RestClientException] {
             Write-Output 'Disconnecting from Exchange Online...'
             Disconnect-ExchangeOnline -Confirm:$false
         }
@@ -895,23 +900,26 @@ Function UpdateRaderSec{
 
         try {
             Disconnect-AipService
-        } catch {
+        }
+        catch {
             Write-Output 'An error occurred while disconnecting from the Azure Information Protection service.'
         }
 
         try {
             Disconnect-AzureAD -ErrorAction SilentlyContinue
             Write-Output 'Disconnected from Azure AD.'
-        } catch [System.NullReferenceException] {
+        }
+        catch [System.NullReferenceException] {
             Write-Output 'Disconnected from Azure AD.' 
         }
         
         try {
             Disconnect-AzAccount -ErrorAction SilentlyContinue
             Write-Output "Disconnected from AzAccount"
-        } catch {
+        }
+        catch {
             Write-Output "Disconnected from AzAccount."
         }
     }
-WelcomeBanner
+    WelcomeBanner
 }
