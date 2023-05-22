@@ -1,8 +1,13 @@
 ﻿# RaderSecOps Script
 Function Invoke-RaderSec {
+    try {
+        Stop-Transcript
+    } catch [System.InvalidOperationException] {
+        # Error caught, no action required
+    }    
     $LogDate = (Get-Date | select-object day,month,year)
     $LogName = "RaderSecLog_$($LogDate.day)_$($LogDate.month)_$($LogDate.year)"
-    Start-Transcript -Path "$env:USERPROFILE\RaderSecLogs-($LogDate).log"
+    Start-Transcript -Path $env:USERPROFILE\$LogName.log -Append
     Function WelcomeBanner {
         Start-Sleep -m 200
         Write-Host " NOTE: Run this with elevated privileges" -ForegroundColor DarkRed
