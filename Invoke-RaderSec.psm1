@@ -829,6 +829,10 @@ Invoke-BEC_IR
       Move-Item "$TempPath\RaderSecOps-main\*" -Destination $ExtractPath
     }#>
 
+    if (Test-Path "$FolderPath\RaderSecOps-main") {
+      Move-Item "$FolderPath\RaderSecOps-main" "$FolderPath\RaderSecOps" -Force
+    }
+
     # Remove the temporary folder
     Remove-Item $ZipFile -Recurse -Force
 
