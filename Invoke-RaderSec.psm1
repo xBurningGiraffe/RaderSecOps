@@ -817,16 +817,20 @@ Invoke-BEC_IR
     Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
 
     # Extract the contents of the .zip file to a temporary folder
+    if (Test-Path "$FolderPath\RaderSecOps-main") {
+      Move-Item "$FolderPath\RaderSecOps-main" "$FolderPath\RaderSecOps" -Force
+    }
     $TempPath = "$FolderPath\RaderSecOps-main"
-    Expand-Archive -Path $DownloadPath -DestinationPath $TempPath
+    $ZipFile = "$FolderPath\RaderSecOps.zip"
+    Expand-Archive -Path $DownloadPath -DestinationPath "$FolderPath"
 
-    # If the extracted folder is named "RaderSecOps-main", move its contents to $ExtractPath
+    <## If the extracted folder is named "RaderSecOps-main", move its contents to $ExtractPath
     if (Test-Path "$TempPath\RaderSecOps-main") {
       Move-Item "$TempPath\RaderSecOps-main\*" -Destination $ExtractPath
-    }
+    }#>
 
     # Remove the temporary folder
-    Remove-Item $TempPath -Recurse -Force
+    Remove-Item $ZipFile -Recurse -Force
 
     $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
     if (!(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name RaderSecOps') -or !(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"')) {
