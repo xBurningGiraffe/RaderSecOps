@@ -669,7 +669,7 @@ Function Invoke-RaderSec {
 
   Function PwnUser {
 
-    Invoke-BEC_IR
+Invoke-BEC_IR
 
 }
 

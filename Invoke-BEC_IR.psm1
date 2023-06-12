@@ -1,13 +1,6 @@
 Function Invoke-BEC_IR {
 
-     # Check for HAWK
-    if (!(Get-Module -ListAvailable | Where-Object {$_.Name -eq "Hawk"})) {
-      ModuleInstalls
-    } else {
-      Import-Module Hawk
-    }
 
-  Function BEC_Menu {
     Write-Host "------------ BEC_IR Menu ------------" -ForegroundColor DarkGreen
     Write-Host ""
     Write-Host "  [0] Post to Compromises Teams channel" -ForegroundColor DarkMagenta
@@ -40,7 +33,6 @@ Function Invoke-BEC_IR {
         return
       }
     }
-  }
     # Post alert to compromises channel
     Function PwnPost {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -82,6 +74,12 @@ Function Invoke-BEC_IR {
 
   Function Hawk {
     try {
+
+      if (!(Get-Module -ListAvailable | Where-Object {$_.Name -eq "Hawk"})) {
+        ModuleInstalls
+      } else {
+        Import-Module Hawk
+      }
 
     Start-HawkUserInvestigation -UserPrincipalName $Pwned
     
@@ -139,5 +137,6 @@ Function Invoke-BEC_IR {
     BEC_IR
   }
 
-  BEC_Menu
+
+
 }
