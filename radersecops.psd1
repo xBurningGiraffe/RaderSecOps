@@ -5,5 +5,12 @@
 	PowerShellVersion = '5.1'
 	FunctionsToExport = '*'
 	RootModule = 'Invoke-RaderSec.psm1'
-	NestedModules = @('Invoke-RaderIP_Hunter.psm1','Invoke-RaderSnD.psm1','Start-IntuneManagement.psm1','Invoke-Rader_Recon.psm1','Get-RaderSecClientData.psm1')
+	NestedModules = @(
+		'Invoke-RaderIP_Hunter.psm1',
+		'Invoke-RaderSnD.psm1',
+		'Start-IntuneManagement.psm1',
+		'Invoke-Rader_Recon.psm1',
+		'Get-RaderSecClientData.psm1',
+		'Invoke-BEC_IR.psm1'
+		)
 }
