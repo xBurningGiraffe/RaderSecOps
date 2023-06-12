@@ -5,37 +5,21 @@ Function Invoke-BEC_IR {
   Function BEC_Menu {
     Write-Host "------------ BEC_IR Menu ------------" -ForegroundColor DarkGreen
     Write-Host ""
-    Write-Host "  [0] Post to Compromises Teams channel" -ForegroundColor DarkMagenta
-    Write-Host "  [1] Start Hawk Investigation" -ForegroundColor DarkMagenta
-    Write-Host "  [2] Generate BEC IR report" -ForegroundColor DarkMagenta
-    Write-Host "  [A] Run all functions" -ForegroundColor DarkMagenta
+    Write-Host "  [0] Start BEC IR Process" -ForegroundColor DarkMagenta
     Write-Host "  [R] Return to RaderSecOps menu" -ForegroundColor DarkRed
     Write-Host ""
 
-    $input = Read-Host "Select an option"
+    $GetOption = Read-Host "Select an option"
 
-    switch ($input) {
+    switch ($GetOption) {
       '0' {
-        PwnPost
-        Start-Sleep -Seconds 2
-      }
-      '1' {
-        Hawk
-        Start-Sleep -Seconds 2
-      }
-      '2' {
-        BEC_IR
-        Start-Sleep -Seconds 2
-      }
-      'A' {
         AllFunctions
         Start-Sleep -Seconds 2
       }
       'R' {
         return
-      }
     }
-  }
+}
 
   Function PwnPost {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -142,5 +126,5 @@ Function Invoke-BEC_IR {
     # Post alert to compromises channel
 
     BEC_Menu
-
+}
 }
