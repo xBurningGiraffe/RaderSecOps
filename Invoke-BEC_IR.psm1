@@ -1,4 +1,37 @@
-Function Invoke-BEC_IR {   
+Function Invoke-BEC_IR {
+  
+    Write-Host "------------ BEC_IR Menu ------------" -ForegroundColor DarkGreen
+    Write-Host ""
+    Write-Host "  [0] Post to Compromises Teams channel" -ForegroundColor DarkMagenta
+    Write-Host "  [1] Start Hawk Investigation" -ForegroundColor DarkMagenta
+    Write-Host "  [2] Generate BEC IR report" -ForegroundColor DarkMagenta
+    Write-Host "  [A] Run all functions" -ForegroundColor DarkMagenta
+    Write-Host "  [R] Return to RaderSecOps menu" -ForegroundColor DarkRed
+
+    $input = Read-Host "Select an option"
+
+    switch ($input) {
+      '0' {
+        PwnPost
+        Start-Sleep -Seconds 2
+      }
+      '1' {
+        Hawk
+        Start-Sleep -Seconds 2
+      }
+      '2' {
+        BEC_IR
+        Start-Sleep -Seconds 2
+      }
+      'A' {
+        AllFunctions
+        Start-Sleep -Seconds 2
+      }
+      'R' {
+        return
+      }
+    }
+
    
    # Check for HAWK
     if (!(Get-Module -ListAvailable | Where-Object {$_.Name -eq "Hawk"})) {
@@ -7,6 +40,7 @@ Function Invoke-BEC_IR {
       Import-Module Hawk
     }
     # Post alert to compromises channel
+    Function PwnPost {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "First, connect to your Rader Solutions account: "
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -42,6 +76,9 @@ Function Invoke-BEC_IR {
     catch { 
       Write-Error "Error posting message in Compromises Team channel: $($_.Exception.Message)"
     }
+  }
+
+  Function Hawk {
     try {
 
     Start-HawkUserInvestigation -UserPrincipalName $Pwned
@@ -51,6 +88,9 @@ Function Invoke-BEC_IR {
       Write-Error "Error starting Hawk investigation for user account: $($_.Exception.Message)"
     
     }
+  }
+
+  Function BEC_IR {
 
     try {
     # Creating BEC_IR Report via Python (bec_report.py)
@@ -88,4 +128,12 @@ Function Invoke-BEC_IR {
       Write-Error "Error creating BEC IR report: $($_.Exception.Message)"
 
     }
+
+  }
+
+  Function AllFunctions {
+    PwnPost
+    Hawk
+    BEC_IR
+  }
 }
