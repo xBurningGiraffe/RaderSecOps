@@ -103,17 +103,17 @@ Function Invoke-BEC_IR {
     $DocPath = "$env:PROGRAMFILES\WindowsPowershell\Modules\RaderSecOps\BEC_IR_REPORT.docx"
 
     # Check for bec_report.py
-    if (!(Test-Path "$FilePath\bec_report.py")) {
+    if (!(Test-Path "$CurrPath\bec_report.py")) {
 
       Write-Host "bec_report.py was not detected in this directory. Downloading from Github..." -ForegroundColor DarkRed
-      Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/bec_report.py" -OutFile "$env:PROGRAMFILES\WindowsPowershell\Modules\RaderSecOps\bec_report.py"
-      Unblock-File -Path "$env:PROGRAMFILES\WindowsPowershell\Modules\RaderSecOps\bec_report.py"
+      Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/bec_report.py" -OutFile "$CurrPath\bec_report.py"
+      Unblock-File -Path "$CurrPath\bec_report.py"
 
-    } elseif (!(Test-Path "$FilePath\BEC_IR_REPORT.docx")) {
+    } elseif (!(Test-Path "$CurrPath\BEC_IR_REPORT.docx")) {
       
       Write-Host "BEC_IR_REPORT not detected. Downloading from Github..." 
-      Invoke-WebRequest -Uri "https://github.com/xBurningGiraffe/RaderSecOps/raw/main/BEC_IR_REPORT.docx" -OutFile "$FilePath\BEC_IR_REPORT.docx"
-      Unblock-File -Path "$FilePath\BEC_IR_REPORT.docx"
+      Invoke-WebRequest -Uri "https://github.com/xBurningGiraffe/RaderSecOps/raw/main/BEC_IR_REPORT.docx" -OutFile "$CurrPath\BEC_IR_REPORT.docx"
+      Unblock-File -Path "$CurrPath\BEC_IR_REPORT.docx"
     
     }
 
