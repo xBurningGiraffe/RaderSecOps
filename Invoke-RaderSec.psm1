@@ -803,46 +803,33 @@ Invoke-BEC_IR
   }
     
   Function UpdateRaderSec {
-    $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
+    $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules\RaderSecOps"
     $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
-    $DownloadPath = "$FolderPath\RaderSecOps.zip"
-    $ExtractPath = "$FolderPath\RaderSecOps"
+    $ZipFile = "$FolderPath\RaderSecOps.zip"
 
-    # Check if the RaderSecOps folder exists and remove it if it does
-    if (Test-Path "$FolderPath\RaderSecOps") {
-      Remove-Item "$FolderPath\RaderSecOps" -Recurse -Force
+    # Remove the RaderSecOps folder if it exists
+    if (Test-Path $FolderPath) {
+        Remove-Item $FolderPath -Recurse -Force
     }
     
     # Download the RaderSecOps module from the URL
-    Invoke-WebRequest -Uri $Url -OutFile $DownloadPath
+    Invoke-WebRequest -Uri $Url -OutFile $ZipFile
 
-    # Extract the contents of the .zip file to a temporary folder
-    if (Test-Path "$FolderPath\RaderSecOps-main") {
-      Move-Item "$FolderPath\RaderSecOps-main" "$FolderPath\RaderSecOps" -Force
-    }
-    $TempPath = "$FolderPath\RaderSecOps-main"
-    $ZipFile = "$FolderPath\RaderSecOps.zip"
-    Expand-Archive -Path $DownloadPath -DestinationPath "$FolderPath"
+    # Extract the contents of the .zip file to the Modules folder
+    Expand-Archive -Path $ZipFile -DestinationPath $FolderPath -Force
 
-    <## If the extracted folder is named "RaderSecOps-main", move its contents to $ExtractPath
-    if (Test-Path "$TempPath\RaderSecOps-main") {
-      Move-Item "$TempPath\RaderSecOps-main\*" -Destination $ExtractPath
-    }#>
-
-    if (Test-Path "$FolderPath\RaderSecOps-main") {
-      Move-Item "$FolderPath\RaderSecOps-main" "$FolderPath\RaderSecOps" -Force
-    }
-
-    # Remove the temporary folder
-    Remove-Item $ZipFile -Recurse -Force
+    # Remove the .zip file
+    Remove-Item $ZipFile -Force
 
     $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
-    if (!(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name RaderSecOps') -or !(Get-Content $ProfilePath | Select-String -SimpleMatch 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"')) {
-      Write-Output 'Import-Module -Name RaderSecOps' >> $ProfilePath
-      Write-Output 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' >> $ProfilePath
+    if (!(Select-String -Path $ProfilePath -Pattern 'Import-Module -Name RaderSecOps') -or !(Select-String -Path $ProfilePath -Pattern 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"')) {
+        'Import-Module -Name RaderSecOps' | Add-Content -Path $ProfilePath
+        'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"' | Add-Content -Path $ProfilePath
     }
-    Write-Host "RaderSecOps has been updated. Restart RaderSecOps in a new tab or Powershell window." -ForegroundColor DarkGreen
-  }
+
+    Write-Host "RaderSecOps has been updated. Restart RaderSecOps in a new tab or PowerShell window." -ForegroundColor DarkGreen
+}
+
 
 
 
