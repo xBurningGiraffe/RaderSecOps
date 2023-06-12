@@ -1,6 +1,8 @@
 Function Invoke-BEC_IR {
 
+  
 
+  Function BEC_Menu {
     Write-Host "------------ BEC_IR Menu ------------" -ForegroundColor DarkGreen
     Write-Host ""
     Write-Host "  [0] Post to Compromises Teams channel" -ForegroundColor DarkMagenta
@@ -33,8 +35,9 @@ Function Invoke-BEC_IR {
         return
       }
     }
-    # Post alert to compromises channel
-    Function PwnPost {
+  }
+
+  Function PwnPost {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "First, connect to your Rader Solutions account: "
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -136,7 +139,8 @@ Function Invoke-BEC_IR {
     Hawk
     BEC_IR
   }
+    # Post alert to compromises channel
 
-
+    BEC_Menu
 
 }
