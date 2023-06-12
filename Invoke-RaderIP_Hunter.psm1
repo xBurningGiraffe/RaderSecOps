@@ -28,7 +28,7 @@ foreach ($APIKey in $APIKeys) {
     Set-Variable -Name $secretName -Value $secretValue
 }
 
-$SearchIP = Read-Host "Enter the IP to search: " -ForegroundColor DarkBlue
+$SearchIP = Read-Host "Enter the IP to search: "
 
 # Output file information
 $FileData = (Get-Date | select-object day,month,year)

@@ -247,6 +247,16 @@ Function Invoke-RaderSec {
         Write-Host "Importing required Powershell modules..." -ForegroundColor DarkYellow
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
         Import-Module -Name $Module
+        $HawkCheck = Get-Module -ListAvailable | Where-Object {$_.Name -eq "Hawk"}
+        if (!$HawkCheck) {
+          Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+          Write-Host "Installing HAWK module..." -ForegroundColor DarkYellow
+          Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
+          Set-ExecutionPolicy RemoteSigned -Confirm:$false
+          Invoke-WebRequest -Uri https://raw.githubusercontent.com/T0pCyber/hawk/master/install.ps1 -OutFile .\hawkinstall.ps1
+          Unblock-File -Path .\hawkinstall.ps1
+          .\hawkinstall.ps1
+        }
       }
       else {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -658,18 +668,9 @@ Function Invoke-RaderSec {
   # }
 
   Function PwnPost {
-    # Install Hawk module if not installed
-    $HawkCheck = Test-Path -Path "$($env:ProgramFiles)\WindowsPowershell\Modules\Hawk"
-    if (! $($HawkCheck)) {
-      Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-      Write-Host "Installing HAWK module..." -ForegroundColor DarkYellow
-      Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
-      Set-ExecutionPolicy RemoteSigned -Confirm:$false
-      Invoke-WebRequest -Uri https://raw.githubusercontent.com/T0pCyber/hawk/master/install.ps1 -OutFile .\hawkinstall.ps1
-      Unblock-File -Path .\hawkinstall.ps1
-      .\hawkinstall.ps1
+    if (!(Get-Module -ListAvailable | Where-Object {$_.Name -eq "Hawk"})) {
+      ModuleInstalls
     }
-
     # Post alert to compromises channel
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "First, connect to your Rader Solutions account: "
@@ -707,9 +708,20 @@ Function Invoke-RaderSec {
       Write-Error "Error posting message in Compromises Team channel: $($_.Exception.Message)" -ForegroundColor DarkRed 
     }
 
-
     Start-HawkUserInvestigation -UserPrincipalName $Pwned
-  }
+
+    # Creating BEC_IR Report via Python (bec_report.py)
+    $PwnDataJson = $PwnData | ConvertTo-Json
+
+    $CurrPath = pwd
+    $PythonPath = (Get-Command python).Source
+    $PythonScript = "$CurrPath/bec_report.py"
+    $Template = "$CurrPath/BEC_IR_REPORT.docx"
+
+    $arguments = "`"$PythonScript`" `"$PwnDataJson`" `"$CurrPath`""
+    
+    Start-Process python3 -ArgumentList $arguments -NoNewWindow -Wait
+}
 
   Function DMARCDKIM {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
