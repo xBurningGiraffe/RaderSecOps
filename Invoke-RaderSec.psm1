@@ -803,23 +803,26 @@ Invoke-BEC_IR
   }
     
   Function UpdateRaderSec {
-    $FolderPath = "$($env:ProgramFiles)\WindowsPowerShell\Modules\RaderSecOps"
+    $ModulePath = "$($env:ProgramFiles)\WindowsPowerShell\Modules"
     $Url = "https://github.com/xBurningGiraffe/RaderSecOps/archive/refs/heads/main.zip"
-    $ZipFile = "$FolderPath\RaderSecOps.zip"
+    $RaderSecPath = "$($ModulePath)\RaderSecOps"
 
     # Remove the RaderSecOps folder if it exists
-    if (Test-Path $FolderPath) {
-        Remove-Item $FolderPath -Recurse -Force
+    if (Test-Path $RaderSecPath) {
+        Remove-Item $RaderSecPath -Recurse -Force
     }
-    
+
     # Download the RaderSecOps module from the URL
-    Invoke-WebRequest -Uri $Url -OutFile $ZipFile
+    Invoke-WebRequest -Uri $Url -OutFile main.zip
 
     # Extract the contents of the .zip file to the Modules folder
-    Expand-Archive -Path $ZipFile -DestinationPath $FolderPath -Force
+    Expand-Archive .\main.zip -DestinationPath $ModulePath -Force
+
+    # Change Module Name
+    Move-item "$($ModulePath)\RaderSecOps-main" "$($ModulePath)\RaderSecOps"
 
     # Remove the .zip file
-    Remove-Item $ZipFile -Force
+    Remove-Item main.zip -Force
 
     $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
     if (!(Select-String -Path $ProfilePath -Pattern 'Import-Module -Name RaderSecOps') -or !(Select-String -Path $ProfilePath -Pattern 'Import-Module -Name "$env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"')) {
