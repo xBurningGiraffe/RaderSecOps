@@ -11,6 +11,7 @@
 		'Start-IntuneManagement.psm1',
 		'Invoke-Rader_Recon.psm1',
 		'Find-SecurityClients.psm1',
-		'Invoke-BEC_IR.psm1'
+		'Invoke-BEC_IR.psm1',
+		'Get-RaderSecClientData.psm1'
 		)
 }
