@@ -16,7 +16,7 @@ catch {
     # Caught message
 }
 
-function ExecuteMultiLineCommand {
+<#function ExecuteMultiLineCommand {
     param([string]$commandText)
 
     $commandText = $commandText -replace '\r?\n', '; '
@@ -28,7 +28,7 @@ function ExecuteMultiLineCommand {
             Invoke-Expression $cmd
         }
     }
-}
+}#>
 
 # Import and install missing modules
 
@@ -105,7 +105,7 @@ Function SingleClient {
         Import-PSSession -Session $ExchangeOnlineSession -AllowClobber -DisableNameChecking
         ##
         Write-Host "$matchedclient.Name Results"
-        ExecuteMultiLineCommand $command
+        & $command
         
         ##
         Remove-PSSession $ExchangeOnlineSession
@@ -164,7 +164,7 @@ Function AllClients {
                 Import-PSSession -Session $ExchangeOnlineSession -AllowClobber -DisableNameChecking
 
                 Write-Host "$AllSecurityClient.Name Results"
-                ExecuteMultiLineCommand $command
+                & $command
 
                 Remove-PSSession $ExchangeOnlineSession
             }
@@ -198,7 +198,7 @@ Function AllPartnerCustomers {
                 ##
 
                 Write-Host "$Customer.Name Results"
-                ExecuteMultiLineCommand $command
+                & $command
     
 
                 ##
@@ -225,8 +225,8 @@ Function ExecuteCommands {
     while ($continueLoop) {
         $CWSecurityClients = @{
             childconditions = "types/name='Security - Baseline' OR types/name='Security - Light' OR types/name='Security - Enhanced'"
-            fields          = "id,name,types/name,userdefinedfield10"
-            pageSize        = "1000"
+            fields = "id,name,types/name,userdefinedfield10"
+            pageSize = "1000"
         }
 
         $AllSecurityClients = Get-CWMCompany @CWSecurityClients | ForEach-Object {
@@ -251,8 +251,8 @@ Function ExecuteCommands {
             Clear-Host
             Write-Host "Please select an option:" -ForegroundColor DarkYellow
             Write-Host "1. Execute command for a single client" -ForegroundColor DarkMagenta
-            Write-Host "2. Execute command for all security clients" -ForegroundColor DarkMagenta
-            Write-Host "3. Execute command for all PartnerCenter clients." -ForegroundColor DarkMagenta
+            Write-Host "2. Execute command for all RADER Security clients" -ForegroundColor DarkMagenta
+            Write-Host "3. Execute command for all customers in PartnerCenter" -ForegroundColor DarkMagenta
             Write-Host "q. Quit" -ForegroundColor DarkRed
             $selectedChoice = Read-Host "Enter your choice"
         }
@@ -265,15 +265,16 @@ Function ExecuteCommands {
                     $confirmationMessage = "Did you mean $($matchedClient.Name)? (y/n)"
                     $confirm = Read-Host $confirmationMessage
                     if ($confirm -eq 'y') {
-                        Write-Host "Enter the command to execute for $($matchedClient.Name), press enter on a blank line to finish" -ForegroundColor DarkGreen
+                        Write-Host "Enter the commands to execute for $($matchedClient.Name), press enter on a blank line to finish" -ForegroundColor DarkGreen
                         $command = ""
                         do {
                             $inputLine = Read-Host
                             if ($inputLine -ne "") {
-                                $command += $inputLine + "; "
+                                $command += $inputLine + "`n"
                             }
                         } while ($inputLine -ne "")
-                        SingleClient $command
+                        $commandBlock = [scriptblock]::Create($command)
+                        SingleClient -command $commandBlock -clientname $matchedClient.Name
                     }
                     elseif ($confirm -eq 'n') {
                         $suggestion = $AllSecurityClients | Where-Object { $_.Name -like "*$clientName*" }
@@ -281,15 +282,16 @@ Function ExecuteCommands {
                             Write-Host "Client '$clientName' not found. Did you mean $($suggestion.Name)?" -ForegroundColor DarkRed
                             $confirm = Read-Host "(y/n)"
                             if ($confirm -eq 'y') {
-                                Write-Host "Enter the command to execute for $($matchedClient.Name). Press enter on a blank line to finish"
+                                Write-Host "Enter the commands to execute for $($suggestion.Name). Press enter on a blank line to finish"
                                 $command = ""
                                 do {
                                     $inputLine = Read-Host
                                     if ($inputLine -ne "") {
-                                        $command += $inputLine + "; "
+                                        $command += $inputLine + "`n"
                                     }
                                 } while ($inputLine -ne "")
-                                SingleClient $command
+                                $commandBlock = [scriptblock]::Create($command)
+                                SingleClient -command $commandBlock -clientname $matchedClient.Name
                             }
                         }
                         else {
@@ -297,43 +299,56 @@ Function ExecuteCommands {
                         }
                     }
                 }
-            }
+            }                        
             '2' {
-                Write-Host "Enter the command to execute for all security clients. Press enter on a blank line to finish" -ForegroundColor DarkCyan
-                $command = ""
+                Write-Host "Enter the command to execute for all clients. Press enter on a blank line to finish"
+            
+                # Collect user input as a string
+                $commandString = ""
                 do {
                     $inputLine = Read-Host
                     if ($inputLine -ne "") {
-                        $command += $inputLine + "; "
+                        $commandString += $inputLine + "`n"
                     }
                 } while ($inputLine -ne "")
-                AllClients -command $command
-                $prompt = "Do you want to return to the main menu? (y/n)"
-                $choice = Read-Host $prompt
-                if ($choice -ne 'y') {
-                    $continueLoop = $false
-                }
+            
+                # Convert the string to a script block
+                $command = [scriptblock]::Create($commandString)
+            
+                # Execute the command
+                AllSecurityClients -command $command
+            
+                $continueLoop = $false
+                break
             }
             '3' {
-                Write-Host "Enter the command to execute for all PartnerCenter clients. Press enter on a blank line to finish" -ForegroundColor DarkCyan
-                $command = ""
+                Write-Host "Enter the command to execute for all PartnerCenter clients. Press enter on a blank line to finish"
+
+                $commandString = ""
                 do {
                     $inputLine = Read-Host
                     if ($inputLine -ne "") {
-                        $command += $inputLine + "; "
+                        $commandString += $inputLine + "`n"
                     }
                 } while ($inputLine -ne "")
-                AllPartnerCustomers $command
-                $prompt = "Do you want to return to the main menu? (y/n)"
-                $choice = Read-Host $prompt
-                if ($choice -ne 'y') {
-                    $continueLoop = $false
-                }
-            }            
+
+                $command = [scriptblock]::Create($commandString)
+
+                PCClients -command $command
+
+                $continueLoop = $false
+                break
+            }                        
             'q' {
                 $continueLoop = $false
-                Stop-Transcript *>$null
+                Disconnect-AzAccount
             }
+        }
+
+        $prompt = "Do you want to return to the main menu? (y/n)"
+        $choice = Read-Host $prompt
+        if ($choice -ne 'y') {
+            $continueLoop = $false
         }
     }
 }
