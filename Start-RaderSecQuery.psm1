@@ -1,36 +1,17 @@
 Function Start-RaderSecQuery {
-Write-Host "Initializing...one moment" -ForegroundColor DarkMagenta
-# Start transcript for reference
-try {
-    Stop-Transcript *> $null
-}
-catch [System.InvalidOperationException] {
-    # Caught error
-}
-$LogDate = (Get-Date | select-object day, month, year)
-$LogName = "RaderSecQuery_$($LogDate.day)_$($LogDate.month)_$($LogDate.year)"
-try {
-    Start-Transcript -Path $env:USERPROFILE\$LogName.log -Append *> $null
-}
-catch {
-    # Caught message
-}
+# $LogDate = (Get-Date | select-object day, month, year)
+# $LogName = "RaderSecQuery_$($LogDate.day)_$($LogDate.month)_$($LogDate.year)"
 
 <#function ExecuteMultiLineCommand {
     param([string]$commandText)
 
-    $commandText = $commandText -replace '\r?\n', '; '
-    $commands = $commandText -split "; "
+    # Create a script block from the command text
+    $scriptBlock = [scriptblock]::Create($commandText)
 
-    foreach ($cmd in $commands) {
-        if ($cmd.Trim() -ne "") {
-            # Write-Host "Executing: $cmd"
-            Invoke-Expression $cmd
-        }
-    }
+    # Execute the script block
+    Invoke-Expression $scriptBlock
 }#>
 
-# Import and install missing modules
 
 $Modules = @('PartnerCenter', 'Az.Accounts', 'Az.KeyVault', 'ConnectwiseManageAPI')
 foreach ($Module in $Modules) {
@@ -54,25 +35,27 @@ if (-not (Get-AzContext -ErrorAction SilentlyContinue)) {
 
 # ---------------------Connect to PartnerCenter -----------#
 ## PartnerCenter Connection and Loop Section ##
-$ApplicationId = Get-AzKeyVaultSecret -VaultName 'azb-keys' -Name 'cspWebAppID' -AsPlainText
-$ApplicationSecret = Get-AzKeyVaultSecret -VaultName 'azb-keys' -Name 'cspAppSecret' -AsPlainText | Convertto-SecureString -AsPlainText -Force
-$TenantID = Get-AzKeyVaultSecret -VaultName 'azb-keys' -Name 'tenantId' -AsPlainText
-$RefreshToken = Get-AzKeyVaultSecret -VaultName 'azb-keys' -Name 'cspAppRefreshToken' -AsPlainText
-$ExchangeRefreshToken = Get-AzKeyVaultSecret -VaultName 'azb-keys' -Name 'exoRefreshToken' -AsPlainText
-$credential = New-Object System.Management.Automation.PSCredential($ApplicationId, $ApplicationSecret)
-$UPN = "cfontenot@radersolutions.com"
 
-
-$aadGraphToken = New-PartnerAccessToken -ApplicationId $ApplicationId -Credential $credential -RefreshToken $refreshToken -Scopes 'https://graph.windows.net/.default' -ServicePrincipal -Tenant $tenantID
-$graphToken = New-PartnerAccessToken -ApplicationId $ApplicationId -Credential $credential -RefreshToken $refreshToken -Scopes 'https://graph.microsoft.com/.default' -ServicePrincipal -Tenant $tenantID
-function getPartnerToken { 
-    return New-PartnerAccessToken -ApplicationId $ApplicationId -RefreshToken $RefreshToken -Scopes 'https://api.partnercenter.microsoft.com/user_impersonation' -ServicePrincipal -Credential $credential -Tenant $tenantId
+$Keys = @{
+    AppId = Get-AzKeyVaultSecret -VaultName 'azb-keys' -Name 'cspWebAppID' -AsPlainText
+    AppSecret = Get-AzKeyVaultSecret -VaultName 'azb-keys' -Name 'cspAppSecret' -AsPlainText
+    PartnerTenantID = Get-AzKeyVaultSecret -VaultName 'azb-keys' -Name 'tenantId' -AsPlainText
+    RefreshToken = Get-AzKeyVaultSecret -VaultName 'azb-keys' -Name 'cspAppRefreshToken' -AsPlainText
+    UPN = "cfontenot@radersolutions.com"
+    ConsentScope = 'https://api.partnercenter.microsoft.com/user_impersonation'
+    AppDisplayName = 'Partner Center Web App'
 }
-$token = (getPartnerToken).AccessToken
 
-$PCAccessToken = getPartnerToken
+$AppCredential = (New-Object System.Management.Automation.PSCredential ($Keys.AppId, (ConvertTo-SecureString $Keys.AppSecret -AsPlainText -Force)))
+
+# Connect to MsolService
+$aadGraphToken = New-PartnerAccessToken -ApplicationId $Keys.AppId -Credential $Appcredential -RefreshToken $Keys.refreshToken -Scopes 'https://graph.windows.net/.default' -ServicePrincipal -Tenant $Keys.PartnerTenantID
+$graphToken = New-PartnerAccessToken -ApplicationId $Keys.AppId -Credential $Appcredential -RefreshToken $Keys.refreshToken -Scopes 'https://graph.microsoft.com/.default' -ServicePrincipal -Tenant $Keys.PartnerTenantID
 Connect-MsolService -AdGraphAccessToken $aadGraphToken.AccessToken -MsGraphAccessToken $graphToken.AccessToken
-Connect-PartnerCenter -AccessToken $PCAccessToken.AccessToken
+
+# Connect to PC
+$PartnerAccessToken = New-PartnerAccessToken -ApplicationId $Keys.AppId -RefreshToken $Keys.RefreshToken -Scopes $Keys.ConsentScope -ServicePrincipal -Credential $AppCredential -Tenant $Keys.PartnerTenantID
+Connect-PartnerCenter -AccessToken $PartnerAccessToken.AccessToken
 
 # --------------------- Connect to CW Manage API ----------------------- #
 
@@ -88,133 +71,84 @@ Connect-CWM @CWMConnectionInfo
 
 # ------------------------ Initial Menu ------------------------- #
 
-Function SingleClient {
-    param(
-        [string]$command, [string]$clientName
-    )
-    try { 
-        $SingleClientDomain = $matchedClient.Domain
-        Write-host "Connecting to the Exchange managed console for $($matchedclient.name)" -ForegroundColor DarkCyan
-    
-        Write-host "Executing commands for $($matchedclient.Name)" -ForegroundColor DarkGreen
-        $token = New-PartnerAccessToken -ApplicationId 'a0c73c16-a7e3-4564-9a95-2bdf47383716'-RefreshToken $ExchangeRefreshToken -Scopes 'https://outlook.office365.com/.default' -Tenant $matchedclient.tenantId *> $null
-        $tokenValue = ConvertTo-SecureString "Bearer $($token.AccessToken)" -AsPlainText -Force
-        $credentialExchange = New-Object System.Management.Automation.PSCredential($upn, $tokenValue)
-    
-        $ExchangeOnlineSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://ps.outlook.com/powershell-liveid?DelegatedOrg=$($SingleClientDomain)&BasicAuthToOAuthConversion=true" -Credential $credentialExchange -Authentication Basic -AllowRedirection -erroraction Stop *> $null
-        Import-PSSession -Session $ExchangeOnlineSession -AllowClobber -DisableNameChecking
-        ##
-        Write-Host "$matchedclient.Name Results"
-        & $command
-        
-        ##
-        Remove-PSSession $ExchangeOnlineSession
-    }
-    catch {
-        Write-Host "Error: $($_.Exception.Message)"
-        # continue
-    }
-}
-<#Function AllClients {
-    param ([string]$command) 
+Function AllSecurityClients {
+    param ([scriptblock]$command) 
     try {
-        Write-Host "Starting execution of commands for all clients." -ForegroundColor DarkMagenta
         foreach ($AllSecurityClient in $AllSecurityClients) {
-            $CustomerDomain = $AllSecurityClient.Domain
-
-            Write-host "Executing commands for $($AllSecurityClient.Name)" -ForegroundColor DarkYellow
+            $CustomerTenantId = $AllSecurityClient.tenantId
+            $Domain = $AllSecurityClient.Domain
+            Write-Host "Executing commands for $($AllSecurityClient.Name)`r`n" -ForegroundColor DarkGreen
             try {
-                $token = New-PartnerAccessToken -ApplicationId 'a0c73c16-a7e3-4564-9a95-2bdf47383716'-RefreshToken $ExchangeRefreshToken -Scopes 'https://outlook.office365.com/.default' -Tenant $AllSecurityClient.tenantId
-                $tokenValue = ConvertTo-SecureString "Bearer $($token.AccessToken)" -AsPlainText -Force
-                $credentialExchange = New-Object System.Management.Automation.PSCredential($upn, $tokenValue)
+                $token = New-PartnerAccessToken -ApplicationId $Keys.AppId -Scopes 'https://outlook.office365.com/.default' -ServicePrincipal -Credential $Appcredential -Tenant $CustomerTenantId -RefreshToken $PartnerAccessToken.RefreshToken
+                Connect-ExchangeOnline -DelegatedOrganization $CustomerTenantId -AccessToken $token.AccessToken
 
-                $ExchangeOnlineSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://ps.outlook.com/powershell-liveid?DelegatedOrg=$($CustomerDomain)&BasicAuthToOAuthConversion=true" -Credential $credentialExchange -Authentication Basic -AllowRedirection -erroraction Stop
-                Import-PSSession -Session $ExchangeOnlineSession -AllowClobber -DisableNameChecking
-
-                ExecuteMultiLineCommand $command
-
-                Remove-PSSession $ExchangeOnlineSession
-            }
-            catch {
-                Write-Host "An error occurred during the execution of the commands or the PowerShell session operations: $($_.Exception.Message)" -ForegroundColor DarkRed
-            }
-        }
-        Write-Host "Finished executing commands for all clients." -ForegroundColor DarkGreen
-    }
-    catch {
-        Write-Host "Error: $($_.Exception.Message)" -ForegroundColor DarkRed
-        continue
-    }
-}#>
-
-Function AllClients {
-    param ([string]$command) 
-    try {
-        Write-Host "Starting execution of commands for all clients." -ForegroundColor DarkMagenta
-        foreach ($AllSecurityClient in $AllSecurityClients) {
-            $CustomerDomain = $AllSecurityClient.Domain
-            Write-host "Executing commands for $($AllSecurityClient.Name)" -ForegroundColor DarkYellow
-            Write-Output "Executing commands for $($AllSecurityClient.Name)" | Out-File -FilePath "$env:USERPROFILE\AllClientsQuery_$LogName.log" -Append
-            try {
-                $token = New-PartnerAccessToken -ApplicationId 'a0c73c16-a7e3-4564-9a95-2bdf47383716'-RefreshToken $ExchangeRefreshToken -Scopes 'https://outlook.office365.com/.default' -Tenant $AllSecurityClient.tenantId
-                $tokenValue = ConvertTo-SecureString "Bearer $($token.AccessToken)" -AsPlainText -Force
-                $credentialExchange = New-Object System.Management.Automation.PSCredential($upn, $tokenValue)
-
-                $ExchangeOnlineSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://ps.outlook.com/powershell-liveid?DelegatedOrg=$($CustomerDomain)&BasicAuthToOAuthConversion=true" -Credential $credentialExchange -Authentication Basic -AllowRedirection -erroraction Stop
-                Import-PSSession -Session $ExchangeOnlineSession -AllowClobber -DisableNameChecking
-
-                Write-Host "$AllSecurityClient.Name Results"
                 & $command
 
-                Remove-PSSession $ExchangeOnlineSession
+                Disconnect-ExchangeOnline -Confirm:$false
             }
             catch {
-                Write-Host "An error occurred during the execution of the commands or the PowerShell session operations: $($_.Exception.Message)" -ForegroundColor DarkRed
-            }
-        }
-        Write-Host "Finished executing commands for all clients." -ForegroundColor DarkGreen
-    }
-    catch {
-        Write-Host "Error: $($_.Exception.Message)" -ForegroundColor DarkRed
-    }
-}
-
-Function AllPartnerCustomers {
-    param ([string]$command)
-    $customers = Get-PartnerCustomer
-    try {
-        foreach ($customer in $customers) {
-            try {
-                $CustomerDomain = $customer.Domain
-                Write-host "Connecting to the Exchange managed console for client $($customer.name)"
-
-                Write-host "Running for $($Customer.Name)" -ForegroundColor Green
-                $token = New-PartnerAccessToken -ApplicationId 'a0c73c16-a7e3-4564-9a95-2bdf47383716'-RefreshToken $ExchangeRefreshToken -Scopes 'https://outlook.office365.com/.default' -Tenant $customer.customerId
-                $tokenValue = ConvertTo-SecureString "Bearer $($token.AccessToken)" -AsPlainText -Force
-                $credentialExchange = New-Object System.Management.Automation.PSCredential($upn, $tokenValue)
-
-                $ExchangeOnlineSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://ps.outlook.com/powershell-liveid?DelegatedOrg=$($CustomerDomain)&BasicAuthToOAuthConversion=true" -Credential $credentialExchange -Authentication Basic -AllowRedirection -erroraction Stop
-                Import-PSSession -Session $ExchangeOnlineSession -AllowClobber -DisableNameChecking
-                ##
-
-                Write-Host "$Customer.Name Results"
-                & $command
-    
-
-                ##
-                Remove-PSSession $ExchangeOnlineSession
-            }
-            catch {
-                Write-Host "Error: $($_.Exception.Message)"
+                Write-Host "Error for $($AllSecurityClient.Name): $($_.Exception.Message)`r`n" -ForegroundColor DarkRed
                 continue
             }
-        } 
+        }
+        Write-Host "Finished executing commands for all clients." -ForegroundColor DarkGreen
     }
     catch {
         Write-Host "Error: $($_.Exception.Message)" -ForegroundColor DarkRed
+        "Error: $($_.Exception.Message)`r`n"
     }
-
 }
+
+
+
+Function SingleClient {
+    param(
+        [scriptblock]$command, 
+        [string]$clientName
+    )
+    try { 
+        $Domain = $matchedClient.Domain
+        $SingleClientId = $matchedClient.tenantId
+        Write-host "Connecting to the Exchange managed console for $($matchedclient.name)" -ForegroundColor DarkCyan
+        Write-host "Executing commands for $($matchedclient.Name)" -ForegroundColor DarkGreen
+        $token = New-PartnerAccessToken -ApplicationId $Keys.AppId -Scopes 'https://outlook.office365.com/.default' -ServicePrincipal -Credential $Appcredential -Tenant $CustomerTenantId -RefreshToken $PartnerAccessToken.RefreshToken
+        Connect-ExchangeOnline -DelegatedOrganization $SingleClientId -AccessToken $token.AccessToken
+        ##
+        & $command
+
+        Write-host "Commands for $($matchedclient.Name) have been executed successfully" -ForegroundColor DarkGreen
+        Disconnect-ExchangeOnline -Confirm:$false
+    }
+    catch {
+        Write-Host "Error: $($_.Exception.Message)" -ForegroundColor DarkRed
+        "Error: $($_.Exception.Message)`r`n"
+    }
+}
+
+Function PCClients {
+    param(
+        [scriptblock]$command
+    )
+    try {
+        foreach ($Customer in $Customers) {
+            $Domain = $Customer.Domain
+            $CustomerTenantId = $Customer.customerId
+            Write-Host "Executing commands for $($Customer.Name)" -ForegroundColor DarkGreen
+            $token = New-PartnerAccessToken -ApplicationId $keys.AppId -Scopes 'https://outlook.office365.com/.default' -ServicePrincipal -Credential $AppCredential -Tenant $CustomerTenantId -RefreshToken $PartnerAccessToken.RefreshToken
+            Connect-ExchangeOnline -DelegatedOrganization $CustomerTenantId -AccessToken $token.AccessToken
+            ##
+
+            & $command
+            Write-Host "Commands successful for $($Customer.name). Disconnecting" -ForegroundColor DarkGreen
+            Disconnect-ExchangeOnline -Confirm:$false
+        }
+    }
+    catch {
+        Write-Host "Error: $($_.Exception.Message)" -ForegroundColor DarkRed
+        "Error: $($_.Exception.Message)`r`n"
+    }
+}
+
 
 
 
@@ -354,7 +288,7 @@ Function ExecuteCommands {
 }
 
 ExecuteCommands
-}
 
+}
 
 
