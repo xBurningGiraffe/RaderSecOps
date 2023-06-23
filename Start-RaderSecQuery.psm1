@@ -1,4 +1,4 @@
-Function Query-AutoRaderSec {
+Function Start-RaderSecQuery {
 Write-Host "Initializing...one moment" -ForegroundColor DarkMagenta
 # Start transcript for reference
 try {
