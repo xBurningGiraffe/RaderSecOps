@@ -845,7 +845,7 @@ Invoke-BEC_IR
   }
 
   Function RaderClientData {
-    Get-RaderSecClientData
+    Start-RaderSecQuery
   }
     
     
