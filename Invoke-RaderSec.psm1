@@ -59,6 +59,7 @@ Function Invoke-RaderSec {
     Write-Host "    [T] Full O365 ATP/AIP setup" -ForegroundColor Cyan
     Write-Host "    [D] DMARC/DKIM setup (Azure DNS Only)" -ForegroundColor Cyan
     Write-Host "    [M] Enable MFA Conditional Access Policy" -ForegroundColor Cyan
+    Write-Host "    [G] Get RaderSec Client Data & runn comands" -ForegroundColor Cyan
     Write-Host " "
     Write-Host "------------- Other --------------" -ForegroundColor DarkGreen
     Write-Host "    [V] VirusTotal Hash Search" -ForegroundColor Magenta
@@ -201,6 +202,9 @@ Function Invoke-RaderSec {
         'M' {
           Connect-AzureAD
           EnableMFA
+        }
+        'G' {
+          RaderClientData
         }
         'L' {
           Connect-MsolService
@@ -838,6 +842,10 @@ Invoke-BEC_IR
 
   Function Intune {
     Start-IntuneManagement
+  }
+
+  Function RaderClientData {
+    Get-RaderSecClientData
   }
     
     
