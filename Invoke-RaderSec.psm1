@@ -828,10 +828,20 @@ Invoke-BEC_IR
     # Remove the .zip file
     Remove-Item main.zip -Force
 
-    $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+<#     $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
     if (!(Select-String -Path $ProfilePath -Pattern 'Import-Module -Name RaderSecOps') -or !(Select-String -Path $ProfilePath -Pattern 'Import-Module -Name $env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1')) {
         'Import-Module -Name RaderSecOps' | Add-Content -Path $ProfilePath
         'Import-Module -Name $env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1' | Add-Content -Path $ProfilePath
+    } #>
+
+    $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+    $ReadPath = type $ProfilePath
+    $RaderSecOps = "Import-Module -Name RaderSecOps"
+    $IntuneModule = "Import-Module -Name $env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"
+
+    if ($ReadPath -notcontains $RaderSecOps -or $ReadPath -notcontains $IntuneModule) {
+      echo "$($RaderSecOps)" >> $ProfilePath
+      echo "$($IntuneModule)" >> $ProfilePath
     }
 
     Write-Host "RaderSecOps has been updated. Restart RaderSecOps in a new tab or PowerShell window." -ForegroundColor DarkGreen
