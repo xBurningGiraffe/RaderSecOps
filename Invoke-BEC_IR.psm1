@@ -1,32 +1,11 @@
 Function Invoke-BEC_IR {
-
-  
-
-  Function BEC_Menu {
-    Write-Host "------------ BEC_IR Menu ------------" -ForegroundColor DarkGreen
-    Write-Host ""
-    Write-Host "  [0] Start BEC IR Process" -ForegroundColor DarkMagenta
-    Write-Host "  [R] Return to RaderSecOps menu" -ForegroundColor DarkRed
-    Write-Host ""
-
-    $GetOption = Read-Host "Select an option"
-
-    switch ($GetOption) {
-      '0' {
-        AllFunctions
-        Start-Sleep -Seconds 2
-      }
-      'R' {
-        return
-    }
-}
-
-  Function PwnPost {
+ 
+Function PwnPost {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "First, connect to your Rader Solutions account: "
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Connect-AzAccount
-    Start-Sleep -s 15
+    Start-Sleep -s 10
     $Pwned = Read-Host  'Enter the compromised user email address'
     try {
       $PwnData = @{
@@ -63,8 +42,10 @@ Function Invoke-BEC_IR {
     try {
 
       if (!(Get-Module -ListAvailable | Where-Object {$_.Name -eq "Hawk"})) {
-        ModuleInstalls
-      } else {
+        Write-Host "Hawk Powershell module not detected. Installing..." -ForegroundColor DarkRed
+        Start-Sleep -Seconds 5
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/T0pCyber/hawk/master/install.ps1" -OutFile hawkinstall.ps1 | Invoke-Command -InputObject hawkinstall.ps1
+        Install-Module Hawk
         Import-Module Hawk
       }
 
@@ -86,14 +67,17 @@ Function Invoke-BEC_IR {
     $CurrPath = "$env:PROGRAMFILES\WindowsPowershell\Modules\RaderSecOps"
     $DocPath = "$env:PROGRAMFILES\WindowsPowershell\Modules\RaderSecOps\BEC_IR_REPORT.docx"
 
+    $PythonScript = "$CurrPath\bec_report.py"
+    $DocCheck = Test-path "$DocPath\BEC_IR_REPORT.docx"
+
     # Check for bec_report.py
-    if (!(Test-Path "$CurrPath\bec_report.py")) {
+    if (!$PythonScript) {
 
       Write-Host "bec_report.py was not detected in this directory. Downloading from Github..." -ForegroundColor DarkRed
       Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/bec_report.py" -OutFile "$CurrPath\bec_report.py"
       Unblock-File -Path "$CurrPath\bec_report.py"
 
-    } elseif (!(Test-Path "$CurrPath\BEC_IR_REPORT.docx")) {
+    } elseif (!$DocCheck) {
       
       Write-Host "BEC_IR_REPORT not detected. Downloading from Github..." 
       Invoke-WebRequest -Uri "https://github.com/xBurningGiraffe/RaderSecOps/raw/main/BEC_IR_REPORT.docx" -OutFile "$CurrPath\BEC_IR_REPORT.docx"
@@ -106,7 +90,6 @@ Function Invoke-BEC_IR {
     $Ticket = $PwnData.Ticket
 
     $PythonPath = (Get-Command python3).Source
-    $PythonScript = "$CurrPath\bec_report.py"
 
     Start-Process -FilePath $PythonPath -ArgumentList $PythonScript, "-CurrPath", $CurrPath, "-User", $User, "-Company", $Company, "-Ticket", $Ticket -NoNewWindow -Wait
     
@@ -116,15 +99,34 @@ Function Invoke-BEC_IR {
 
     }
 
-  }
+}
 
-  Function AllFunctions {
+Function AllFunctions {
     PwnPost
     Hawk
     BEC_IR
-  }
-    # Post alert to compromises channel
-
-    BEC_Menu
 }
+
+Function BEC_Menu {
+    Write-Host "------------ BEC_IR Menu ------------" -ForegroundColor DarkGreen
+    Write-Host ""
+    Write-Host "  [0] Start BEC IR Process" -ForegroundColor DarkMagenta
+    Write-Host "  [R] Return to RaderSecOps menu" -ForegroundColor DarkRed
+    Write-Host ""
+
+    $GetOption = Read-Host "Select an option"
+
+    switch ($GetOption) {
+      '0' {
+        AllFunctions
+        Start-Sleep -Seconds 2
+      }
+      'R' {
+        return
+    }
+    }
+}
+
+BEC_Menu
+ 
 }
