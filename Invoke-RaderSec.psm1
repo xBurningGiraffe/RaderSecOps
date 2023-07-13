@@ -244,7 +244,7 @@ Function Invoke-RaderSec {
     
   # PowerShell Module Installs
   Function ModuleInstalls {
-    $Modules = @("ExchangeOnlineManagement", "AzureAD", "AIPService", "MSOnline", "PartnerCenter", "OrganizationAddInService", "AzureADPreview", "Az.KeyVault")
+    $Modules = @("ExchangeOnlineManagement", "AzureAD", "AIPService", "MSOnline", "PartnerCenter", "OrganizationAddInService", "Az.Accounts", "Az.KeyVault")
     foreach ($Module in $Modules) {
       if ( ! ( Get-Module -Name "$Module" ) ) {
         Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
@@ -839,7 +839,7 @@ Invoke-BEC_IR
     $RaderSecOps = "Import-Module -Name RaderSecOps"
 
     if ($ReadPath -notcontains $RaderSecOps) {
-      Write-Output $RaderSecOps >> $ProfilePath
+      echo $RaderSecOps >> $ProfilePath
     }
 
     Write-Host "RaderSecOps has been updated. Restart RaderSecOps in a new tab or PowerShell window." -ForegroundColor DarkGreen
