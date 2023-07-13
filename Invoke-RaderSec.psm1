@@ -834,7 +834,7 @@ Invoke-BEC_IR
         'Import-Module -Name $env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1' | Add-Content -Path $ProfilePath
     } #>
 
-    $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+    $ProfilePath = $PROFILE
     $ReadPath = type $ProfilePath
     $RaderSecOps = "Import-Module -Name RaderSecOps"
 
