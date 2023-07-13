@@ -837,11 +837,9 @@ Invoke-BEC_IR
     $ProfilePath = "$($env:USERPROFILE)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
     $ReadPath = type $ProfilePath
     $RaderSecOps = "Import-Module -Name RaderSecOps"
-    $IntuneModule = "Import-Module -Name $env:ProgramFiles\WindowsPowerShell\Modules\RaderSecOps\Start-IntuneManagement.psm1"
 
-    if ($ReadPath -notcontains $RaderSecOps -or $ReadPath -notcontains $IntuneModule) {
+    if ($ReadPath -notcontains $RaderSecOps) {
       echo "$($RaderSecOps)" >> $ProfilePath
-      echo "$($IntuneModule)" >> $ProfilePath
     }
 
     Write-Host "RaderSecOps has been updated. Restart RaderSecOps in a new tab or PowerShell window." -ForegroundColor DarkGreen

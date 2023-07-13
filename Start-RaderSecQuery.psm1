@@ -232,6 +232,8 @@ Function ExecuteCommands {
                             Write-Host "Client '$clientname' not found"
                         }
                     }
+                } else {
+                    Write-Host "No matching client found for the name: $ClientName" -ForegroundColor DarkRed
                 }
             }                        
             '2' {

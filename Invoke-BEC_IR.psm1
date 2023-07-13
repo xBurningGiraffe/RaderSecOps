@@ -1,5 +1,4 @@
-Function Invoke-BEC_IR {
- 
+
 Function PwnPost {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "First, connect to your Rader Solutions account: "
@@ -40,13 +39,16 @@ Function PwnPost {
 
   Function Hawk {
     try {
-
-      if (!(Get-Module -ListAvailable | Where-Object {$_.Name -eq "Hawk"})) {
+      if (-not(Get-Module -ListAvailable -Name Hawk)) {
         Write-Host "Hawk Powershell module not detected. Installing..." -ForegroundColor DarkRed
         Start-Sleep -Seconds 5
         Invoke-WebRequest -Uri "https://raw.githubusercontent.com/T0pCyber/hawk/master/install.ps1" -OutFile hawkinstall.ps1 | Invoke-Command -InputObject hawkinstall.ps1
-        Install-Module Hawk
+        Install-Module -Name Hawk
         Import-Module Hawk
+      } elseif (-not (Get-Module -Name Hawk)) {
+        Import-Module Hawk -ErrorAction SilentlyContinue
+      } else {
+        Write-Host "Hawk module is ready." -ForegroundColor DarkGreen
       }
 
     Start-HawkUserInvestigation -UserPrincipalName $Pwned
@@ -68,7 +70,6 @@ Function PwnPost {
     $DocPath = "$env:PROGRAMFILES\WindowsPowershell\Modules\RaderSecOps\BEC_IR_REPORT.docx"
 
     $PythonScript = "$CurrPath\bec_report.py"
-    $DocCheck = Test-path "$DocPath\BEC_IR_REPORT.docx"
 
     # Check for bec_report.py
     if (!$PythonScript) {
@@ -77,7 +78,7 @@ Function PwnPost {
       Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xBurningGiraffe/RaderSecOps/main/bec_report.py" -OutFile "$CurrPath\bec_report.py"
       Unblock-File -Path "$CurrPath\bec_report.py"
 
-    } elseif (!$DocCheck) {
+    } elseif (!$DocPath) {
       
       Write-Host "BEC_IR_REPORT not detected. Downloading from Github..." 
       Invoke-WebRequest -Uri "https://github.com/xBurningGiraffe/RaderSecOps/raw/main/BEC_IR_REPORT.docx" -OutFile "$CurrPath\BEC_IR_REPORT.docx"
@@ -128,5 +129,3 @@ Function BEC_Menu {
 }
 
 BEC_Menu
- 
-}
