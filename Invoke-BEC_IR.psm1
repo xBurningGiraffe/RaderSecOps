@@ -1,4 +1,4 @@
-
+Function Invoke-BEC_IR {
 Function PwnPost {
     Write-Host "----------------------------------------------------------------------------------------------------------------------------------" -ForegroundColor DarkGreen
     Write-Host "First, connect to your Rader Solutions account: "
@@ -129,3 +129,4 @@ Function BEC_Menu {
 }
 
 BEC_Menu
+}
