@@ -835,11 +835,11 @@ Invoke-BEC_IR
     } #>
 
     $ProfilePath = $PROFILE
-    $ReadPath = type $ProfilePath
+    $ReadPath = Write-Output $env:PROFILE
     $RaderSecOps = "Import-Module -Name RaderSecOps"
 
     if ($ReadPath -notcontains $RaderSecOps) {
-      echo "$($RaderSecOps)" >> $ProfilePath
+      Write-Output $RaderSecOps >> $ProfilePath
     }
 
     Write-Host "RaderSecOps has been updated. Restart RaderSecOps in a new tab or PowerShell window." -ForegroundColor DarkGreen

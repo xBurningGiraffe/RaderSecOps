@@ -60,7 +60,8 @@ Function PwnPost {
     }
   }
 
-  Function BEC_IR {
+  
+  <# Function BEC_IR {
 
     try {
     # Creating BEC_IR Report via Python (bec_report.py)
@@ -100,12 +101,12 @@ Function PwnPost {
 
     }
 
-}
+} #>
 
 Function AllFunctions {
     PwnPost
     Hawk
-    BEC_IR
+    #BEC_IR
 }
 
 Function BEC_Menu {
