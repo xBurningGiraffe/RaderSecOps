@@ -48,7 +48,7 @@ Function PwnPost {
       } elseif (-not (Get-Module -Name Hawk)) {
         Import-Module Hawk -ErrorAction SilentlyContinue
       } else {
-        Write-Host "Hawk module is ready." -ForegroundColor DarkGreen
+        Import-Module Hawk
       }
 
     Start-HawkUserInvestigation -UserPrincipalName $Pwned
