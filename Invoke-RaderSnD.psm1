@@ -106,7 +106,7 @@ $ThisSearchResults = $ThisSearch.SuccessResults;
     Write-Host "==========================================================================="
     Remove-ComplianceSearch -Identity $SearchName
     Write-Host "================================================================================================"
-    Write-Host "My work here is finished. If yours isn't, please rerun Search and Destroy. This ain't no picnic b**tch!)" -ForeGround DarkGreen
+    Write-Host "My work here is finished. If yours isn't, please rerun Search and Destroy. This ain't no picnic b**tch!" -ForeGround DarkGreen
     Write-Host "================================================================================================" -Foreground DarkGreen             
     }elseif ($CheckDelete -eq 'N'){
         Write-Host "==========================================================================="
